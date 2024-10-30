@@ -35,7 +35,7 @@ abstract class BaseController extends Controller
      *
      * @var list<string>
      */
-    protected $helpers = [];
+    protected $helpers = ['url', 'form', 'navbar']; // Added navbar helper here
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -44,15 +44,28 @@ abstract class BaseController extends Controller
     // protected $session;
 
     /**
+     * Data array to be passed to views
+     */
+    protected $data = [];
+
+    /**
      * @return void
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
+        
+        // Load helpers
         helper('url');
-        // Preload any models, libraries, etc, here.
+        
+        // Load navbar data for all views
+        $navbarModel = new \App\Models\NavbarItemModel();
+        $this->data['navItems'] = $navbarModel->where('is_active', 1)
+                                             ->orderBy('order_position', 'ASC')
+                                             ->findAll();
 
+        // Preload any models, libraries, etc, here.
         // E.g.: $this->session = \Config\Services::session();
     }
 }

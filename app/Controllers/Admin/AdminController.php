@@ -60,4 +60,8 @@ class AdminController extends BaseController
     {
         return view('admin/dashboard');
     }
+    public function contentPages()
+{
+    return view('admin/editContentPages');
+}
 }

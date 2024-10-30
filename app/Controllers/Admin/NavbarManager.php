@@ -32,7 +32,7 @@ class NavbarManager extends BaseController
             'title' => $this->request->getPost('title'),
             'type' => $this->request->getPost('type'),
             'slug' => url_title($this->request->getPost('title'), '-', true),
-            'order_position' => $this->navbarItemModel->countAll() + 1
+            'order_position' => $this->navbarItemModel->countAll() + 1,
         ];
 
         try {

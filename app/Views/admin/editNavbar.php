@@ -25,7 +25,7 @@
 
         body {
             background: #f0f2f5;
-            padding: 2rem;
+            /* padding: 2rem; */
         }
 
         .container {
@@ -221,23 +221,97 @@
             font-size: 3rem;
             margin-bottom: 1rem;
         }
+        /* Main Layout Structure */
+body {
+    background: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background: var(--secondary-color);
+    color: white;
+    padding: 2rem 0;
+    position: fixed;
+    width: 250px;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    margin-left: 250px; /* Same as sidebar width */
+    padding: 2rem;
+    min-height: 100vh;
+    width: calc(100% - 250px);
+}
+
+/* Container modifications */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .main-content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar {
+        width: 0;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.show {
+        width: 250px;
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Ensure cards and other elements don't overflow */
+.card {
+    overflow: hidden;
+}
     </style>
+    <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/admin_dashboard.css') ?>">
+
 </head>
 <body>
-    <div class="container">
-        <h1 class="page-title">Manage Navigation Items</h1>
-        
-        <?php if(session()->getFlashdata('success')): ?>
-            <div class="message success">
-                <?= session()->getFlashdata('success') ?>
-            </div>
-        <?php endif; ?>
+    <?= $this->include('admin/partials/sidebar'); ?>
+    <div class="main-content">
+        <div class="container">
+            <h1 class="page-title">Manage Navigation Items</h1>
+            
+            <?php if(session()->getFlashdata('success')): ?>
+                <div class="message success">
+                    <?= session()->getFlashdata('success') ?>
+                </div>
+            <?php endif; ?>
 
-        <?php if(session()->getFlashdata('error')): ?>
-            <div class="message error">
-                <?= session()->getFlashdata('error') ?>
-            </div>
-        <?php endif; ?>
+            <?php if(session()->getFlashdata('error')): ?>
+                <div class="message error">
+                    <?= session()->getFlashdata('error') ?>
+                </div>
+            <?php endif; ?>
         
         <div class="card">
             <form action="<?= base_url('admin/navbarmanager/add') ?>" method="POST" class="add-form">
