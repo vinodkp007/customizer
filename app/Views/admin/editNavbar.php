@@ -180,23 +180,37 @@
             color: white;
         }
 
-        .message {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 6px;
-            font-weight: 500;
-        }
+        /* Add these styles to your existing CSS */
+.message {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.5s ease;
+}
 
-        .message.success {
-            background: rgba(46, 204, 113, 0.1);
-            color: var(--success-color);
-        }
+.message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-        .message.error {
-            background: rgba(231, 76, 60, 0.1);
-            color: var(--danger-color);
-        }
+.message.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+    margin-top: -4rem;
+}
 
+.message.success {
+    background: rgba(46, 204, 113, 0.1);
+    color: var(--success-color);
+}
+
+.message.error {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--danger-color);
+}
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -246,9 +260,9 @@
         </div>
 
         <div class="card">
-            <ul id="navItemsList" class="items-list">
+            <ul id="navItemsList" class="items-list" >
                 <?php foreach ($navbarItems as $item): ?>
-                <li class="item">
+                <li class="item" data-id="<?= $item['id'] ?>">
                     <div class="handle">
                         <i class="fas fa-grip-vertical"></i>
                     </div>
@@ -277,37 +291,102 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script>
-        // Initialize sortable
-        new Sortable(document.getElementById('navItemsList'), {
-            handle: '.handle',
-            animation: 150,
-            onEnd: function(evt) {
-                const items = document.querySelectorAll('.item');
-                const ids = Array.from(items).map(item => item.dataset.id);
-                
-                // Create a form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '<?= base_url('admin/navbarmanager/updateorder') ?>';
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '<?= csrf_token() ?>';
-                csrfToken.value = '<?= csrf_hash() ?>';
-                form.appendChild(csrfToken);
-                
-                // Add ids
-                const idsInput = document.createElement('input');
-                idsInput.type = 'hidden';
-                idsInput.name = 'ids';
-                idsInput.value = JSON.stringify(ids);
-                form.appendChild(idsInput);
-                
-                document.body.appendChild(form);
-                form.submit();
-            }
+       // Updated JavaScript for handling order updates
+       new Sortable(document.getElementById('navItemsList'), {
+    handle: '.handle',
+    animation: 150,
+    ghostClass: 'ghost',
+    dragClass: 'dragging',
+    onEnd: function(evt) {
+        const items = document.querySelectorAll('.item');
+        const itemOrder = Array.from(items).map((item, index) => ({
+            id: item.dataset.id,
+            position: index + 1
+        }));
+
+        // Create form data
+        const formData = new FormData();
+        
+        // Add CSRF token
+        const csrfName = '<?= csrf_token() ?>';
+        const csrfValue = '<?= csrf_hash() ?>';
+        formData.append(csrfName, csrfValue);
+        
+        // Add the order data
+        formData.append('itemOrder', JSON.stringify(itemOrder));
+
+        // Send the update request
+        fetch('<?= base_url('admin/navbarmanager/updateorder') ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            showMessage(data.success, data.message);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage(false, 'Failed to update order');
         });
+    }
+});
+
+// Function to show and hide messages with smooth transitions
+function showMessage(isSuccess, message) {
+    // Remove any existing messages with transition
+    const existingMessages = document.querySelectorAll('.message');
+    existingMessages.forEach(msg => {
+        msg.classList.add('hide');
+        setTimeout(() => msg.remove(), 500); // Wait for transition to complete
+    });
+
+    // Create new message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isSuccess ? 'success' : 'error'}`;
+    messageDiv.textContent = message;
+    
+    // Insert the message at the top of the container
+    const container = document.querySelector('.container');
+    container.insertBefore(messageDiv, container.firstChild);
+    
+    // Trigger reflow to ensure transition works
+    messageDiv.offsetHeight;
+    
+    // Show the message with transition
+    setTimeout(() => {
+        messageDiv.classList.add('show');
+    }, 10);
+
+    // Hide and remove the message after delay
+    setTimeout(() => {
+        messageDiv.classList.add('hide');
+        messageDiv.classList.remove('show');
+        
+        // Remove the element after transition completes
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 500);
+    }, 3000);
+}
+
+// Also add this for the initial page load flash messages
+document.addEventListener('DOMContentLoaded', function() {
+    const flashMessages = document.querySelectorAll('.message');
+    flashMessages.forEach(message => {
+        message.classList.add('show');
+        
+        // Automatically remove after delay
+        setTimeout(() => {
+            message.classList.add('hide');
+            message.classList.remove('show');
+            
+            setTimeout(() => {
+                message.remove();
+            }, 500);
+        }, 3000);
+    });
+});
     </script>
 </body>
 </html>

@@ -67,40 +67,54 @@ class NavbarManager extends BaseController
     public function updateOrder() 
 {
     if (!session()->get('isLoggedIn')) {
-        return redirect()->to('/admin');
+        return $this->response->setJSON([
+            'success' => false, 
+            'message' => 'Not authorized'
+        ]);
     }
 
-    $ids = json_decode($this->request->getPost('ids'), true); // Added true to get array
+    $itemOrder = json_decode($this->request->getPost('itemOrder'), true);
     
-    if ($ids && is_array($ids)) {
-        try {
-            // Begin transaction
-            $this->navbarItemModel->db->transBegin();
-            
-            foreach ($ids as $position => $id) {
-                // Properly specify the WHERE clause in the update
-                $this->navbarItemModel->where('id', $id)
-                                    ->set('order_position', $position + 1)
-                                    ->update();
-            }
-
-            // Commit if all went well
-            if ($this->navbarItemModel->db->transStatus() === false) {
-                $this->navbarItemModel->db->transRollback();
-                session()->setFlashdata('error', 'Failed to update order');
-            } else {
-                $this->navbarItemModel->db->transCommit();
-                session()->setFlashdata('success', 'Order updated successfully');
-            }
-        } catch (\Exception $e) {
-            $this->navbarItemModel->db->transRollback();
-            log_message('error', 'Error updating order: ' . $e->getMessage());
-            session()->setFlashdata('error', 'Failed to update order');
-        }
-    } else {
-        session()->setFlashdata('error', 'Invalid order data provided');
+    if (!$itemOrder || !is_array($itemOrder)) {
+        return $this->response->setJSON([
+            'success' => false, 
+            'message' => 'Invalid data received'
+        ]);
     }
 
-    return redirect()->back();
+    try {
+        $db = \Config\Database::connect();
+        $db->transStart();
+        
+        foreach ($itemOrder as $item) {
+            if (isset($item['id']) && isset($item['position'])) {
+                $db->table('navbar_items')
+                   ->where('id', $item['id'])
+                   ->update(['order_position' => $item['position']]);
+            }
+        }
+
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            log_message('error', 'Transaction failed in updateOrder');
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update order'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Navigation order updated successfully'
+        ]);
+
+    } catch (\Exception $e) {
+        log_message('error', 'Error updating order: ' . $e->getMessage());
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Error updating order: ' . $e->getMessage()
+        ]);
+    }
 }
 }
