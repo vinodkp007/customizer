@@ -1,50 +1,51 @@
+// Page data
 const pages = {
     home: {
         type: 'home',
         carousel: [
-{ 
-image: 'https://placehold.co/1200x600',
-title: 'Welcome to Our Digital Solutions',
-description: 'Transforming Ideas into Reality'
-},
-{ 
-image: 'https://placehold.co/1200x600',
-title: 'Innovative Technology',
-description: 'Building the Future Today'
-},
-{ 
-image: 'https://placehold.co/1200x600',
-title: 'Expert Solutions',
-description: 'Delivering Excellence in Every Project'
-},
-{ 
-image: 'https://placehold.co/1200x600',
-title: 'Creative Design',
-description: 'Where Vision Meets Innovation'
-},
-{ 
-image: 'https://placehold.co/1200x600',
-title: 'Global Reach',
-description: 'Connecting Business Worldwide'
-}
-],
-services: [
-{
-title: 'Web Development',
-description: 'Create stunning, responsive websites tailored to your needs. Our expert team combines cutting-edge technology with elegant design to deliver exceptional web solutions.',
-image: 'https://placehold.co/600x400'
-},
-{
-title: 'Mobile Applications',
-description: 'Transform your ideas into powerful mobile applications. We develop intuitive, feature-rich apps that provide seamless user experiences across all platforms.',
-image: 'https://placehold.co/600x400'
-},
-{
-title: 'Cloud Solutions',
-description: 'Leverage the power of cloud computing for your business. Our cloud solutions help you scale efficiently while maintaining security and performance.',
-image: 'https://placehold.co/600x400'
-}
-]
+            { 
+                image: 'https://placehold.co/1200x600',
+                title: 'Welcome to Our Digital Solutions',
+                description: 'Transforming Ideas into Reality'
+            },
+            { 
+                image: 'https://placehold.co/1200x600',
+                title: 'Innovative Technology',
+                description: 'Building the Future Today'
+            },
+            { 
+                image: 'https://placehold.co/1200x600',
+                title: 'Expert Solutions',
+                description: 'Delivering Excellence in Every Project'
+            },
+            { 
+                image: 'https://placehold.co/1200x600',
+                title: 'Creative Design',
+                description: 'Where Vision Meets Innovation'
+            },
+            { 
+                image: 'https://placehold.co/1200x600',
+                title: 'Global Reach',
+                description: 'Connecting Business Worldwide'
+            }
+        ],
+        services: [
+            {
+                title: 'Web Development',
+                description: 'Create stunning, responsive websites tailored to your needs. Our expert team combines cutting-edge technology with elegant design to deliver exceptional web solutions.',
+                image: 'https://placehold.co/600x400'
+            },
+            {
+                title: 'Mobile Applications',
+                description: 'Transform your ideas into powerful mobile applications. We develop intuitive, feature-rich apps that provide seamless user experiences across all platforms.',
+                image: 'https://placehold.co/600x400'
+            },
+            {
+                title: 'Cloud Solutions',
+                description: 'Leverage the power of cloud computing for your business. Our cloud solutions help you scale efficiently while maintaining security and performance.',
+                image: 'https://placehold.co/600x400'
+            }
+        ]
     },
     about: {
         type: 'simple',
@@ -65,12 +66,21 @@ const navLinks = document.getElementById('navLinks');
 let currentSlide = 0;
 let carouselInterval;
 
+// Intersection Observer for animations
+const visibilityObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
 // Event Listeners
-adminToggle.addEventListener('click', () => {
+adminToggle?.addEventListener('click', () => {
     adminPanel.classList.toggle('active');
 });
 
-navForm.addEventListener('submit', (e) => {
+navForm?.addEventListener('submit', (e) => {
     e.preventDefault();
     const linkText = document.getElementById('linkText').value;
     const pageType = document.getElementById('pageType').value;
@@ -92,14 +102,6 @@ navForm.addEventListener('submit', (e) => {
     navForm.reset();
 });
 
-// Navigation handling
-document.addEventListener('click', (e) => {
-    if (e.target.matches('[data-page]')) {
-        e.preventDefault();
-        const pageId = e.target.dataset.page;
-        renderPage(pageId);
-    }
-});
 
 // Carousel functionality
 function startCarousel() {
@@ -120,15 +122,6 @@ function updateCarousel() {
         });
     }
 }
-
-// Intersection Observer for animations
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, { threshold: 0.1 });
 
 // Page rendering functions
 function renderPage(pageId) {
@@ -197,20 +190,69 @@ function renderHomePage(page) {
 
     // Add intersection observer to service items
     document.querySelectorAll('.service-item').forEach(item => {
-        observer.observe(item);
+        visibilityObserver.observe(item);
     });
 }
 
 function renderSimplePage(page) {
     mainContent.innerHTML = `
-        <div class="simple-page">
-            <img src="${page.image}" alt="${page.title}" class="hero-image">
-            <h1>${page.title}</h1>
-            <div class="content">
-                ${page.content}
+        <div class="about-hero">
+            <img src="/api/placeholder/1920/1080" alt="About Us">
+            <div class="hero-content">
+                <h1>About Our Company</h1>
+                <div class="hero-pixels">1920 × 1080 pixels | Digital Excellence</div>
+            </div>
+        </div>
+
+        <div class="about-content">
+            <div class="content-section">
+                <h2 class="section-title">Our Story</h2>
+                <p>Founded in 2020, our company has been at the forefront of digital innovation. We believe in creating solutions that not only meet current needs but anticipate future challenges. Our journey began with a simple mission: to make technology accessible and effective for businesses of all sizes.</p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div>Projects Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100+</div>
+                    <div>Happy Clients</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div>Team Members</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div>Countries Served</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2 class="section-title">Our Approach</h2>
+                <div class="content-grid">
+                    <div class="grid-item">
+                        <h3>Innovation First</h3>
+                        <p>We stay ahead of technological trends to deliver cutting-edge solutions that give our clients a competitive advantage.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Client-Centric</h3>
+                        <p>Your success is our success. We work closely with our clients to understand their unique needs and challenges.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Quality Driven</h3>
+                        <p>We maintain the highest standards in every project, ensuring robust, scalable, and efficient solutions.</p>
+                    </div>
+                </div>
             </div>
         </div>
     `;
+
+    // Observe all content sections after rendering
+    document.querySelectorAll('.content-section').forEach(section => {
+        visibilityObserver.observe(section);
+    });
 }
 
 function renderContainerPage(page) {
@@ -232,6 +274,22 @@ function renderContainerPage(page) {
         </div>
     `;
 }
+
+// Add necessary styles
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+    .content-section {
+        opacity: 1;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+    }
+
+    .content-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+document.head.appendChild(styleSheet);
 
 // Initial page load
 renderPage('home');

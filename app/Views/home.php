@@ -17,4 +17,4 @@
         </form>
     </div>
 
-    <?= $this->include('partials/footer') ?>
+<?= $this->include('partials/footer') ?>

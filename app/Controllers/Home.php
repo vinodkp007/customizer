@@ -8,4 +8,9 @@ class Home extends BaseController
     {
         return view('home');
     }
+
+    public function about(): string
+    {
+        return view('about');
+    }
 }
