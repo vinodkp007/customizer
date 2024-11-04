@@ -264,9 +264,10 @@
             </div>
         <?php endif; ?>
 
-        <form id="contentForm" action="<?= base_url('admin/content/save') ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?= base_url('admin/content/save') ?>" method="POST" enctype="multipart/form-data">
             <?= csrf_field() ?>
-
+            <!-- In your form -->
+<input type="hidden" name="navbar_item_id" value="<?= $navbar_item_id ?? '' ?>">
             <div class="content-editor">
                 <div class="editor-section">
                     <h3 class="section-title">
