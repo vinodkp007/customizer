@@ -35,10 +35,42 @@ class ContentController extends Controller
     }
 
     public function modify($navbarItemId = null)
-    {
-        $data['navbar_item_id'] = $navbarItemId;
-        return view('admin/contentModify', $data);
+{
+    if (!$navbarItemId) {
+        return redirect()->to(base_url('admin/content'))
+            ->with('error', 'No navbar item ID provided');
     }
+
+    // First check if this navbar item has an associated content page
+    $contentPage = $this->contentPageModel
+        ->where('navbar_item_id', $navbarItemId)
+        ->first();
+
+    $data = [
+        'navbar_item_id' => $navbarItemId,
+        'isEdit' => false,
+        'content' => null
+    ];
+
+    if ($contentPage) {
+        // If content page exists, get its sections
+        $sections = $this->contentSectionModel
+            ->where('content_page_id', $contentPage['id'])
+            ->orderBy('order_position', 'ASC')
+            ->findAll();
+
+        $data['isEdit'] = true;
+        $data['content'] = [
+            'content_page_id' => $contentPage['id'],
+            'hero_title' => $contentPage['hero_title'],
+            'hero_image' => $contentPage['hero_image'],
+            'section_title' => $contentPage['section_title'],
+            'sections' => $sections
+        ];
+    }
+
+    return view('admin/contentModify', $data);
+}
 
     public function save()
     {

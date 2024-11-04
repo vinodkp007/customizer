@@ -248,7 +248,7 @@
 
     <div class="content-wrapper">
         <div class="page-header">
-            <h2>Edit Content Page</h2>
+            <h2><?= $isEdit ? 'Edit' : 'Create' ?> Content Page</h2>
             <p>Customize your page content and layout</p>
         </div>
 
@@ -266,8 +266,11 @@
 
         <form action="<?= base_url('admin/content/save') ?>" method="POST" enctype="multipart/form-data">
             <?= csrf_field() ?>
-            <!-- In your form -->
-<input type="hidden" name="navbar_item_id" value="<?= $navbar_item_id ?? '' ?>">
+            <input type="hidden" name="navbar_item_id" value="<?= $navbar_item_id ?>">
+            <?php if($isEdit && isset($content['content_page_id'])): ?>
+                <input type="hidden" name="content_page_id" value="<?= $content['content_page_id'] ?>">
+            <?php endif; ?>
+
             <div class="content-editor">
                 <div class="editor-section">
                     <h3 class="section-title">
@@ -276,13 +279,26 @@
                     </h3>
                     <div class="form-group">
                         <label class="form-label">Hero Title</label>
-                        <input type="text" class="form-control" name="hero_title" placeholder="Enter hero title" required>
+                        <input type="text" 
+                               class="form-control" 
+                               name="hero_title" 
+                               placeholder="Enter hero title" 
+                               value="<?= $isEdit ? esc($content['hero_title']) : '' ?>"
+                               required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Hero Image</label>
-                        <input type="file" class="form-control" name="hero_image" accept="image/*" style="display: none;" id="heroImage">
+                        <input type="file" 
+                               class="form-control" 
+                               name="hero_image" 
+                               accept="image/*" 
+                               style="display: none;" 
+                               id="heroImage">
                         <div class="image-preview" onclick="document.getElementById('heroImage').click()">
-                            <img src="https://placehold.co/1920x400" alt="Hero Preview">
+                            <img src="<?= $isEdit && $content['hero_image'] 
+                                        ? base_url($content['hero_image']) 
+                                        : 'https://placehold.co/1920x400' ?>" 
+                                 alt="Hero Preview">
                         </div>
                     </div>
                 </div>
@@ -294,18 +310,44 @@
                     </h3>
                     <div class="form-group">
                         <label class="form-label">Section Title</label>
-                        <input type="text" class="form-control" name="section_title" placeholder="Enter section title" required>
+                        <input type="text" 
+                               class="form-control" 
+                               name="section_title" 
+                               placeholder="Enter section title" 
+                               value="<?= $isEdit ? esc($content['section_title']) : '' ?>"
+                               required>
                     </div>
 
                     <div class="paragraph-container">
-                        <div class="paragraph-item">
-                            <div class="paragraph-actions">
-                                <button type="button" class="action-btn delete-btn" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                        <?php if($isEdit && !empty($content['sections'])): ?>
+                            <?php foreach($content['sections'] as $section): ?>
+                                <div class="paragraph-item">
+                                    <div class="paragraph-actions">
+                                        <button type="button" class="action-btn delete-btn" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <textarea class="form-control" 
+                                              name="paragraphs[]" 
+                                              rows="4" 
+                                              placeholder="Enter your content here" 
+                                              required><?= esc($section['content']) ?></textarea>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="paragraph-item">
+                                <div class="paragraph-actions">
+                                    <button type="button" class="action-btn delete-btn" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <textarea class="form-control" 
+                                          name="paragraphs[]" 
+                                          rows="4" 
+                                          placeholder="Enter your content here" 
+                                          required></textarea>
                             </div>
-                            <textarea class="form-control" name="paragraphs[]" rows="4" placeholder="Enter your content here" required></textarea>
-                        </div>
+                        <?php endif; ?>
                     </div>
 
                     <button type="button" class="add-paragraph-btn">
@@ -317,7 +359,7 @@
                 <div class="editor-section">
                     <button type="submit" class="save-btn">
                         <i class="fas fa-save"></i>
-                        Save Changes
+                        <?= $isEdit ? 'Update Changes' : 'Save Changes' ?>
                     </button>
                 </div>
             </div>
