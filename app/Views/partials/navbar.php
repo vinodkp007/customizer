@@ -5,4 +5,4 @@
             <li><a href="<?= base_url('home/content')?>">Services</a></li>
         </ul>
 </nav> -->
-<?= generate_navbar() ?>
+<?= generate_navbar() ?>    

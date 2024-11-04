@@ -28,6 +28,10 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
     $routes->post('navbarmanager/delete/(:num)', 'NavbarManager::delete/$1');
     $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
 });
+
+
+$routes->get('content/(:any)', 'Content::index');
+$routes->get('container/(:any)', 'container::index');
 $routes->get('/', 'Home::index');
 
 

@@ -18,7 +18,9 @@ class NavbarManager extends BaseController
         if (!session()->get('isLoggedIn')) {
             return redirect()->to('/admin');
         }
-        $data['navbarItems'] = $this->navbarItemModel->findAll();
+        $data['navbarItems'] = $this->navbarItemModel
+        ->orderBy('order_position', 'ASC')
+        ->findAll();
         return view('admin/editNavbar', $data);
     }
 
