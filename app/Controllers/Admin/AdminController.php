@@ -4,17 +4,66 @@ namespace App\Controllers\Admin;
 
 use App\Models\AdminModel;
 use App\Controllers\BaseController;
+use CodeIgniter\Database\ConnectionInterface;
 
 class AdminController extends BaseController
 {
+    protected $db;
+
+    public function __construct()
+    {
+        $this->db = \Config\Database::connect();
+    }
+
     public function index()
     {
         // If already logged in, redirect to dashboard
         if (session()->get('isLoggedIn')) {
             return redirect()->to('/admin/dashboard');
-
         }
         return view('admin/login');
+    }
+
+    public function getDashboardStats()
+    {
+        $builder = $this->db->table('navbar_items');
+        
+        // Get content pages count
+        $contentPages = $builder->where('type', 'content')
+                              ->where('is_active', 1)
+                              ->countAllResults();
+        
+        // Reset the builder to get fresh query
+        $builder = $this->db->table('navbar_items');
+        
+        // Get containers count
+        $containers = $builder->where('type', 'container')
+                            ->where('is_active', 1)
+                            ->countAllResults();
+        
+        // Reset the builder again
+        $builder = $this->db->table('navbar_items');
+        
+        // Get total nav items
+        $navItems = $builder->where('is_active', 1)
+                          ->countAllResults();
+
+        return [
+            'content_pages' => $contentPages,
+            'containers' => $containers,
+            'nav_items' => $navItems
+        ];
+    }
+
+    public function dashboard()
+    {
+        // Create the data array
+        $data = [
+            'stats' => $this->getDashboardStats()
+        ];
+
+        // Pass the data array to the view
+        return view('admin/dashboard', $data);
     }
 
     public function login()
@@ -56,12 +105,9 @@ class AdminController extends BaseController
         session()->destroy();
         return redirect()->to('/admin');
     }
-    public function dashboard()
-    {
-        return view('admin/dashboard');
-    }
+
     public function contentPages()
-{
-    return view('admin/editContentPages');
-}
+    {
+        return view('admin/editContentPages');
+    }
 }

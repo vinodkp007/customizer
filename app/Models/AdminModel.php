@@ -23,4 +23,6 @@ class AdminModel extends Model
         }
         return $data;
     }
+
+   
 }
