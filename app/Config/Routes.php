@@ -11,7 +11,12 @@ use CodeIgniter\Router\RouteCollection;
 // Make sure this is above any other routes that might conflict
 $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
     $routes->get('/', 'AdminController::index');
+    $routes->get('container', 'ContainersController::index');
+    $routes->get('content', 'ContentController::index');
+    $routes->add('content/(:any)', 'ContentController::$1');
+    $routes->add('container/(:any)', 'ContainersController::$1');
     $routes->add('(:any)','AdminController::$1');
+
 
 });
 
