@@ -131,3 +131,5 @@ env
 
 database.php
 
+/app/Config/Database.php/
+/public/uploads/containers/
