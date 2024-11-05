@@ -444,6 +444,60 @@ textarea.form-control {
     box-shadow: var(--shadow-lg);
     border: 2px dashed var(--primary-color);
 }
+.component-item {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .component-header {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light-bg);
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+        }
+
+        .component-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .component-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .child-items {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .child-items.show {
+            display: block;
+        }
+
+        .component-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .component-header[aria-expanded="true"] .toggle-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -451,7 +505,7 @@ textarea.form-control {
     
     <div class="main-content">
         <div class="container">
-            <h1 class="page-title">Manage Home Page Content</h1>
+            <h1 class="page-title">Content Manager</h1>
             
             <?php if(session()->getFlashdata('success')): ?>
                 <div class="message success">
@@ -460,15 +514,24 @@ textarea.form-control {
             <?php endif; ?>
 
             <?php if(session()->getFlashdata('error')): ?>
-                <div class="message error">
-                    <?= session()->getFlashdata('error') ?>
-                </div>
-            <?php endif; ?>
+    <div class="message error">
+        <?php 
+        $error = session()->getFlashdata('error');
+        if(is_array($error)):
+            foreach($error as $err):
+                echo esc($err) . '<br>';
+            endforeach;
+        else:
+            echo esc($error);
+        endif;
+        ?>
+    </div>
+<?php endif; ?>
 
             <!-- Carousel Management Section -->
             <div class="card">
                 <h2>Carousel Management</h2>
-                <form action="<?= base_url('admin/home-edit/addslide') ?>" method="POST" enctype="multipart/form-data" class="add-form">
+                <form action="<?= base_url('admin/home-edit/addSlide') ?>" method="POST" enctype="multipart/form-data" class="add-form">
                     <?= csrf_field() ?>
                     <div class="form-group">
                         <label for="slideTitle">Slide Title</label>
@@ -507,7 +570,7 @@ textarea.form-control {
                             <button class="btn-icon edit" onclick="editSlide(<?= $item['id'] ?>)">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form action="<?= base_url('admin/home-edit/deleteslide/' . $item['id']) ?>" method="POST" style="display: inline;">
+                            <form action="<?= base_url('admin/home-edit/deleteSlide/' . $item['id']) ?>" method="POST" style="display: inline;">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn-icon delete" onclick="return confirm('Are you sure you want to delete this slide?')">
                                     <i class="fas fa-trash"></i>
@@ -519,54 +582,98 @@ textarea.form-control {
                 </ul>
             </div>
 
-            <!-- Services Management Section -->
+            <!-- Component Management Section -->
             <div class="card">
-                <h2>Services Management</h2>
-                <form action="<?= base_url('admin/home-edit/addservice') ?>" method="POST" enctype="multipart/form-data" class="add-form">
+                <h2>Component Management</h2>
+                <form action="<?= base_url('admin/home-edit/addComponent') ?>" method="POST" class="add-form">
                     <?= csrf_field() ?>
                     <div class="form-group">
-                        <label for="serviceTitle">Service Title</label>
-                        <input type="text" id="serviceTitle" name="title" class="form-control" required placeholder="Enter service title">
+                        <label for="componentTitle">Component Title</label>
+                        <input type="text" id="componentTitle" name="title" class="form-control" required placeholder="Enter component title">
                     </div>
                     <div class="form-group">
-                        <label for="serviceDescription">Description</label>
-                        <textarea id="serviceDescription" name="description" class="form-control" required placeholder="Enter service description" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="serviceImage">Image</label>
-                        <input type="file" id="serviceImage" name="image" class="form-control" accept="image/*" required>
+                        <label for="componentSlug">Component Slug</label>
+                        <input type="text" id="componentSlug" name="slug" class="form-control" required placeholder="Enter component slug">
                     </div>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Service
+                        <i class="fas fa-plus"></i> Add Component
                     </button>
                 </form>
 
-                <ul id="servicesItems" class="items-list">
-                    <?php foreach ($services as $service): ?>
-                    <li class="item" data-id="<?= $service['id'] ?>">
-                        <div class="handle">
-                            <i class="fas fa-grip-vertical"></i>
-                        </div>
-                        <div class="item-content">
-                            <div class="item-image">
-                                <img src="<?= base_url($service['image']) ?>" alt="<?= esc($service['title']) ?>" width="100">
+                <ul id="componentsList" class="items-list">
+                    <?php foreach ($components as $component): ?>
+                    <li class="component-item" data-id="<?= $component['id'] ?>">
+                        <div class="component-header" onclick="toggleComponent(this)" aria-expanded="false">
+                            <div class="component-title">
+                                <i class="fas fa-grip-vertical handle"></i>
+                                <?= esc($component['title']) ?>
                             </div>
-                            <div class="title">
-                                <strong><?= esc($service['title']) ?></strong>
-                                <small><?= esc($service['description']) ?></small>
+                            <div class="component-actions">
+                                <button class="btn-icon edit" onclick="editComponent(<?= $component['id'] ?>)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="<?= base_url('admin/home-edit/deleteComponent/' . $component['id']) ?>" method="POST" style="display: inline;">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn-icon delete" onclick="return confirm('Are you sure you want to delete this component and all its items?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                <i class="fas fa-chevron-down toggle-icon"></i>
                             </div>
                         </div>
-                        <div class="type-badge container">Service</div>
-                        <div class="actions">
-                            <button class="btn-icon edit" onclick="editService(<?= $service['id'] ?>)">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form action="<?= base_url('admin/home-edit/deleteservice/' . $service['id']) ?>" method="POST" style="display: inline;">
+                        
+                        <div class="child-items">
+                            <!-- Add Child Item Form -->
+                            <form action="<?= base_url('admin/home-edit/addComponentItem') ?>" method="POST" enctype="multipart/form-data" class="add-form">
                                 <?= csrf_field() ?>
-                                <button type="submit" class="btn-icon delete" onclick="return confirm('Are you sure you want to delete this service?')">
-                                    <i class="fas fa-trash"></i>
+                                <input type="hidden" name="component_id" value="<?= $component['id'] ?>">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    <input type="text" name="title" class="form-control" required placeholder="Enter item title">
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea name="description" class="form-control" required placeholder="Enter item description" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image</label>
+                                    <input type="file" name="image" class="form-control" accept="image/*" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Item
                                 </button>
                             </form>
+
+                            <!-- Child Items List -->
+                            <ul class="items-list" data-component-id="<?= $component['id'] ?>">
+                                <?php foreach ($component['items'] as $item): ?>
+                                <li class="child-item" data-id="<?= $item['id'] ?>">
+                                    <div class="handle">
+                                        <i class="fas fa-grip-vertical"></i>
+                                    </div>
+                                    <div class="item-content">
+                                        <div class="item-image">
+                                            <img src="<?= base_url($item['image']) ?>" alt="<?= esc($item['title']) ?>" width="100">
+                                        </div>
+                                        <div class="title">
+                                            <strong><?= esc($item['title']) ?></strong>
+                                            <small><?= esc($item['description']) ?></small>
+                                        </div>
+                                    </div>
+                                    <div class="actions">
+                                        <button class="btn-icon edit" onclick="editItem(<?= $item['id'] ?>)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <form action="<?= base_url('admin/home-edit/deleteComponentItem/' . $item['id']) ?>" method="POST" style="display: inline;">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn-icon delete" onclick="return confirm('Are you sure you want to delete this item?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </li>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
                     </li>
                     <?php endforeach; ?>
@@ -580,7 +687,7 @@ textarea.form-control {
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Edit Slide</h2>
-            <form action="<?= base_url('admin/home-edit/updateslide') ?>" method="POST" enctype="multipart/form-data">
+            <form action="<?= base_url('admin/home-edit/updateSlide') ?>" method="POST" enctype="multipart/form-data">
                 <?= csrf_field() ?>
                 <input type="hidden" name="id" id="editSlideId">
                 <div class="form-group">
@@ -600,30 +707,52 @@ textarea.form-control {
         </div>
     </div>
 
-    <!-- Edit Service Modal -->
-    <div id="editServiceModal" class="modal">
+    <!-- Edit Component Modal -->
+    <div id="editComponentModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Edit Service</h2>
-            <form action="<?= base_url('admin/home-edit/updateservice') ?>" method="POST" enctype="multipart/form-data">
+            <h2>Edit Component</h2>
+            <form action="<?= base_url('admin/home-edit/updateComponent') ?>" method="POST">
                 <?= csrf_field() ?>
-                <input type="hidden" name="id" id="editServiceId">
+                <input type="hidden" name="id" id="editComponentId">
                 <div class="form-group">
                     <label>Title</label>
-                    <input type="text" name="title" id="editServiceTitle" class="form-control" required>
+                    <input type="text" name="title" id="editComponentTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Slug</label>
+                    <input type="text" name="slug" id="editComponentSlug" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Component</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Component Item Modal -->
+    <div id="editItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Item</h2>
+            <form action="<?= base_url('admin/home-edit/updateComponentItem') ?>" method="POST" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                <input type="hidden" name="id" id="editItemId">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" id="editItemTitle" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea name="description" id="editServiceDescription" class="form-control" required rows="3"></textarea>
+                    <textarea name="description" id="editItemDescription" class="form-control" required rows="3"></textarea>
                 </div>
                 <div class="form-group">
                     <label>New Image (optional)</label>
                     <input type="file" name="image" class="form-control" accept="image/*">
                 </div>
-                <button type="submit" class="btn btn-primary">Update Service</button>
+                <button type="submit" class="btn btn-primary">Update Item</button>
             </form>
         </div>
     </div>
+
 
     <style>
     /* Additional styles for the home manager page */
@@ -681,131 +810,255 @@ textarea.form-control {
     }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <script>
-        // Initialize Sortable for both lists
-        new Sortable(document.getElementById('carouselItems'), {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+    // Initialize Sortable for carousel items
+    new Sortable(document.getElementById('carouselItems'), {
+        handle: '.handle',
+        animation: 150,
+        onEnd: function(evt) {
+            updateSlideOrder(evt.target);
+        }
+    });
+
+    // Initialize Sortable for components
+    new Sortable(document.getElementById('componentsList'), {
+        handle: '.handle',
+        animation: 150,
+        onEnd: function(evt) {
+            updateComponentOrder(evt.target);
+        }
+    });
+
+    // Initialize Sortable for child items
+    document.querySelectorAll('.items-list[data-component-id]').forEach(list => {
+        new Sortable(list, {
             handle: '.handle',
             animation: 150,
             onEnd: function(evt) {
-                updateOrder('carousel', evt.target);
+                updateItemOrder(evt.target);
             }
         });
+    });
 
-        new Sortable(document.getElementById('servicesItems'), {
-            handle: '.handle',
-            animation: 150,
-            onEnd: function(evt) {
-                updateOrder('services', evt.target);
-            }
-        });
+    // Slide Functions
+    
 
-        function updateOrder(type, list) {
-            const items = list.querySelectorAll('.item');
-            const itemOrder = Array.from(items).map((item, index) => ({
-                id: item.dataset.id,
-                position: index + 1
-            }));
-
-            const formData = new FormData();
-            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-            formData.append('type', type);
-            formData.append('itemOrder', JSON.stringify(itemOrder));
-
-            fetch('<?= base_url('admin/home-edit/updateorder') ?>', {
-                method: 'POST',
-                body: formData
-            })
+    function editSlide(id) {
+        fetch(`<?= base_url('admin/home-edit/getSlide') ?>/${id}`)
             .then(response => response.json())
             .then(data => {
-                showMessage(data.success, data.message);
+                document.getElementById('editSlideId').value = data.id;
+                document.getElementById('editSlideTitle').value = data.title;
+                document.getElementById('editSlideDescription').value = data.description;
+                document.getElementById('editSlideModal').style.display = 'block';
             })
             .catch(error => {
                 console.error('Error:', error);
-                showMessage(false, 'Failed to update order');
+                showMessage(false, 'Failed to fetch slide data');
             });
-        }
+    }
 
-        // Modal handling functions
-        function editSlide(id) {
-            // Fetch slide data and populate modal
-            fetch(`<?= base_url('admin/home-edit/getslide/') ?>/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('editSlideId').value = data.id;
-                    document.getElementById('editSlideTitle').value = data.title;
-                    document.getElementById('editSlideDescription').value = data.description;
-                    document.getElementById('editSlideModal').style.display = 'block';
-                });
-        }
+    // Component Functions
+    function toggleComponent(header) {
+        const childItems = header.nextElementSibling;
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+        const toggleIcon = header.querySelector('.toggle-icon');
+        
+        header.setAttribute('aria-expanded', !isExpanded);
+        childItems.classList.toggle('show');
+        toggleIcon.style.transform = !isExpanded ? 'rotate(180deg)' : 'rotate(0)';
+    }
 
-        function editService(id) {
-            // Fetch service data and populate modal
-            fetch(`<?= base_url('admin/home-edit/getservice/') ?>/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('editServiceId').value = data.id;
-                    document.getElementById('editServiceTitle').value = data.title;
-                    document.getElementById('editServiceDescription').value = data.description;
-                    document.getElementById('editServiceModal').style.display = 'block';
-                });
-        }
+    
 
-        // Close modals when clicking the close button or outside
-        document.querySelectorAll('.close').forEach(closeBtn => {
-            closeBtn.onclick = function() {
-                this.closest('.modal').style.display = 'none';
-            }
+    
+
+    function editComponent(id) {
+        event.stopPropagation();
+        
+        fetch(`<?= base_url('admin/home-edit/getComponent') ?>/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editComponentId').value = data.id;
+                document.getElementById('editComponentTitle').value = data.title;
+                document.getElementById('editComponentSlug').value = data.slug;
+                document.getElementById('editComponentModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage(false, 'Failed to fetch component data');
+            });
+    }
+
+    function editItem(id) {
+        event.stopPropagation();
+        
+        fetch(`<?= base_url('admin/home-edit/getComponentItem') ?>/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editItemId').value = data.id;
+                document.getElementById('editItemTitle').value = data.title;
+                document.getElementById('editItemDescription').value = data.description;
+                document.getElementById('editItemModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage(false, 'Failed to fetch item data');
+            });
+    }
+
+    // Auto-generate slug from title
+    document.getElementById('componentTitle').addEventListener('input', function() {
+        const slug = this.value
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
+        document.getElementById('componentSlug').value = slug;
+    });
+
+    // Modal handling
+    document.querySelectorAll('.modal .close').forEach(closeBtn => {
+        closeBtn.onclick = function() {
+            this.closest('.modal').style.display = 'none';
+        }
+    });
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    }
+
+    // Message handling
+    function showMessage(isSuccess, message) {
+        const existingMessages = document.querySelectorAll('.message');
+        existingMessages.forEach(msg => {
+            msg.classList.add('hide');
+            setTimeout(() => msg.remove(), 500);
         });
 
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isSuccess ? 'success' : 'error'}`;
+        messageDiv.textContent = message;
+        
+        const container = document.querySelector('.container');
+        container.insertBefore(messageDiv, container.firstChild);
+        
+        setTimeout(() => messageDiv.classList.add('show'), 10);
 
-        // Message handling function (same as your existing code)
-        function showMessage(isSuccess, message) {
-            const existingMessages = document.querySelectorAll('.message');
-            existingMessages.forEach(msg => {
-                msg.classList.add('hide');
-                setTimeout(() => msg.remove(), 500);
-            });
+        setTimeout(() => {
+            messageDiv.classList.add('hide');
+            messageDiv.classList.remove('show');
+            setTimeout(() => messageDiv.remove(), 500);
+        }, 3000);
+    }
 
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isSuccess ? 'success' : 'error'}`;
-            messageDiv.textContent = message;
-            
-            const container = document.querySelector('.container');
-            container.insertBefore(messageDiv, container.firstChild);
-            
-            setTimeout(() => {
-                messageDiv.classList.add('show');
-            }, 10);
-
-            setTimeout(() => {
-                messageDiv.classList.add('hide');
-                messageDiv.classList.remove('show');
-                setTimeout(() => {
-                    messageDiv.remove();
-                }, 500);
-            }, 3000);
-        }
-
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
         // Initialize flash messages
-        document.addEventListener('DOMContentLoaded', function() {
-            const flashMessages = document.querySelectorAll('.message');
-            flashMessages.forEach(message => {
-                message.classList.add('show');
-                setTimeout(() => {
-                    message.classList.add('hide');
-                    message.classList.remove('show');
-                    setTimeout(() => {
-                        message.remove();
-                    }, 500);
-                }, 3000);
+        const flashMessages = document.querySelectorAll('.message');
+        flashMessages.forEach(message => {
+            message.classList.add('show');
+            setTimeout(() => {
+                message.classList.add('hide');
+                message.classList.remove('show');
+                setTimeout(() => message.remove(), 500);
+            }, 3000);
+        });
+
+        // Initialize sortable lists for component items
+        const componentLists = document.querySelectorAll('.items-list[data-component-id]');
+        componentLists.forEach(list => {
+            new Sortable(list, {
+                handle: '.handle',
+                animation: 150,
+                onEnd: function(evt) {
+                    updateItemOrder(evt.target);
+                }
             });
         });
-    </script>
+    });
+
+    // Prevent form submission when clicking edit/delete buttons
+    document.querySelectorAll('.btn-icon').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    // Prevent component toggle when clicking form elements
+    document.querySelectorAll('.child-items form').forEach(form => {
+        form.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+    function updateSlideOrder(targetList) {
+    const items = Array.from(targetList.children).map((item, index) => ({
+        id: item.dataset.id,
+        position: index + 1
+    }));
+
+    const formData = new FormData();
+    formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+    formData.append('itemOrder', JSON.stringify(items));
+    
+    fetch('<?= base_url('admin/home-edit/updateSlideOrder') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => showMessage(data.success, data.message))
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage(false, 'Failed to update slide order');
+    });
+}
+
+function updateComponentOrder(targetList) {
+    const items = Array.from(targetList.children).map((item, index) => ({
+        id: item.dataset.id,
+        position: index + 1
+    }));
+
+    const formData = new FormData();
+    formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+    formData.append('itemOrder', JSON.stringify(items));
+    
+    fetch('<?= base_url('admin/home-edit/updateComponentOrder') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => showMessage(data.success, data.message))
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage(false, 'Failed to update component order');
+    });
+}
+
+function updateItemOrder(targetList) {
+    const items = Array.from(targetList.children).map((item, index) => ({
+        id: item.dataset.id,
+        position: index + 1
+    }));
+
+    const formData = new FormData();
+    formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+    formData.append('component_id', targetList.dataset.componentId);
+    formData.append('itemOrder', JSON.stringify(items));
+
+    fetch('<?= base_url('admin/home-edit/updateComponentItemOrder') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => showMessage(data.success, data.message))
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage(false, 'Failed to update item order');
+    });
+}
+</script>
 </body>
 </html>

@@ -18,9 +18,10 @@ class Home extends BaseController
     {
         $data = [
             'carouselItems' => $this->homeCarouselModel->orderBy('position', 'ASC')->findAll(),
-            'services' => $this->homeServicesModel->orderBy('position', 'ASC')->findAll()
+            // 'services' => $this->homeServicesModel->orderBy('position', 'ASC')->findAll()
+            'components' => []
         ];
-
+        
         return view('home', $data);
     }
 }

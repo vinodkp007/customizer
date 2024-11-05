@@ -15,7 +15,7 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
     $routes->get('content', 'ContentController::index');
     $routes->add('content/(:any)', 'ContentController::$1');
     $routes->add('container/(:any)', 'ContainersController::$1');
-    $routes->add('(:any)','AdminController::$1');
+   
 
     
 
@@ -27,14 +27,10 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
     $routes->post('home-edit/addslide', 'EditHomeController::addSlide');
     $routes->post('home-edit/updateslide', 'EditHomeController::updateSlide');
     $routes->post('home-edit/deleteslide/(:num)', 'EditHomeController::deleteSlide/$1');
-    $routes->get('home-edit/getslide/(:num)', 'EditHomeController::getSlide/$1');
-    
-    $routes->post('home-edit/addservice', 'EditHomeController::addService');
-    $routes->post('home-edit/updateservice', 'EditHomeController::updateService');
-    $routes->post('home-edit/deleteservice/(:num)', 'EditHomeController::deleteService/$1');
-    $routes->get('home-edit/getservice/(:num)', 'EditHomeController::getService/$1');
-    
-    $routes->post('home-edit/updateorder', 'EditHomeController::updateOrder');
+    $routes->get('home-edit/getSlide/(:num)', 'EditHomeController::getSlide/$1');
+    $routes->get('home-edit/getComponent/(:num)', 'EditHomeController::getComponent/$1');
+    $routes->get('home-edit/getComponentItem/(:num)', 'EditHomeController::getComponentItem/$1');
+    $routes->add('home-edit/(:any)', 'EditHomeController::$1');
 });
 
 
@@ -45,6 +41,8 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
     $routes->post('navbarmanager/add', 'NavbarManager::add');
     $routes->post('navbarmanager/delete/(:num)', 'NavbarManager::delete/$1');
     $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
+    $routes->add('(:any)','AdminController::$1');
+
 });
 
 

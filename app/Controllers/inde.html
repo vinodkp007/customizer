@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component Admin Panel</title>
+    <style>
+        .component-container {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .child-component {
+            border: 1px solid #eee;
+            margin: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="admin-panel">
+        <h2>Component Admin Panel</h2>
+        <button onclick="showAddComponentForm()">Add New Component</button>
+        
+        <div id="component-form" class="hidden">
+            <h3>Add New Component</h3>
+            <div class="form-group">
+                <label for="componentType">Component Type:</label>
+                <input type="text" id="componentType" placeholder="e.g., Services, Testimonials">
+            </div>
+            <button onclick="addComponent()">Save Component</button>
+            <button onclick="hideAddComponentForm()">Cancel</button>
+        </div>
+
+        <div id="components-list"></div>
+    </div>
+
+    <script>
+        // Data structure to store components
+        let components = [
+            {
+                id: 1,
+                type: 'Services',
+                children: [
+                    {
+                        id: 1,
+                        title: 'Web Development',
+                        paragraph: 'Full stack development services',
+                        imageUrl: '/placeholder.jpg'
+                    }
+                ]
+            }
+        ];
+
+        // Initialize the admin panel
+        function initializePanel() {
+            renderComponents();
+        }
+
+        // Render all components
+        function renderComponents() {
+            const container = document.getElementById('components-list');
+            container.innerHTML = '';
+
+            components.forEach(component => {
+                const componentElement = createComponentElement(component);
+                container.appendChild(componentElement);
+            });
+        }
+
+        // Create HTML element for a component
+        function createComponentElement(component) {
+            const div = document.createElement('div');
+            div.className = 'component-container';
+            div.innerHTML = `
+                <h3>${component.type}</h3>
+                <div class="controls">
+                    <button onclick="showAddChildForm(${component.id})">Add Child Component</button>
+                    <button onclick="deleteComponent(${component.id})">Delete Component</button>
+                </div>
+                <div id="child-form-${component.id}" class="hidden">
+                    <h4>Add Child Component</h4>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="title-${component.id}">
+                    </div>
+                    <div class="form-group">
+                        <label>Paragraph:</label>
+                        <textarea id="paragraph-${component.id}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL:</label>
+                        <input type="text" id="imageUrl-${component.id}">
+                    </div>
+                    <button onclick="addChildComponent(${component.id})">Save Child</button>
+                    <button onclick="hideAddChildForm(${component.id})">Cancel</button>
+                </div>
+                <div id="children-${component.id}">
+                    ${renderChildComponents(component.children)}
+                </div>
+            `;
+            return div;
+        }
+
+        // Render child components
+        function renderChildComponents(children) {
+            return children.map(child => `
+                <div class="child-component">
+                    <h4>${child.title}</h4>
+                    <p>${child.paragraph}</p>
+                    <img src="${child.imageUrl}" alt="${child.title}" style="max-width: 200px;">
+                    <button onclick="deleteChildComponent(${child.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Show/hide forms
+        function showAddComponentForm() {
+            document.getElementById('component-form').classList.remove('hidden');
+        }
+
+        function hideAddComponentForm() {
+            document.getElementById('component-form').classList.add('hidden');
+        }
+
+        function showAddChildForm(componentId) {
+            document.getElementById(`child-form-${componentId}`).classList.remove('hidden');
+        }
+
+        function hideAddChildForm(componentId) {
+            document.getElementById(`child-form-${componentId}`).classList.add('hidden');
+        }
+
+        // Add new component
+        function addComponent() {
+            const type = document.getElementById('componentType').value;
+            if (type) {
+                const newComponent = {
+                    id: Date.now(),
+                    type: type,
+                    children: []
+                };
+                components.push(newComponent);
+                renderComponents();
+                hideAddComponentForm();
+                document.getElementById('componentType').value = '';
+            }
+        }
+
+        // Add child component
+        function addChildComponent(componentId) {
+            const component = components.find(c => c.id === componentId);
+            if (component) {
+                const newChild = {
+                    id: Date.now(),
+                    title: document.getElementById(`title-${componentId}`).value,
+                    paragraph: document.getElementById(`paragraph-${componentId}`).value,
+                    imageUrl: document.getElementById(`imageUrl-${componentId}`).value
+                };
+                component.children.push(newChild);
+                renderComponents();
+                hideAddChildForm(componentId);
+            }
+        }
+
+        // Delete component
+        function deleteComponent(componentId) {
+            if (confirm('Are you sure you want to delete this component?')) {
+                components = components.filter(c => c.id !== componentId);
+                renderComponents();
+            }
+        }
+
+        // Delete child component
+        function deleteChildComponent(childId) {
+            if (confirm('Are you sure you want to delete this child component?')) {
+                components = components.map(component => ({
+                    ...component,
+                    children: component.children.filter(child => child.id !== childId)
+                }));
+                renderComponents();
+            }
+        }
+
+        // Initialize the panel when the page loads
+        document.addEventListener('DOMContentLoaded', initializePanel);
+    </script>
+</body>
+</html>
