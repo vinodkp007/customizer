@@ -1,10 +1,10 @@
-<!-- app/Views/admin/editContentPages.php -->
+<!-- app/Views/admin/editContainerPages.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Content Pages Management</title>
+    <title>Container Pages Management</title>
     <link rel="stylesheet" href="<?= base_url('assets/css/admin_dashboard.css') ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -60,7 +60,7 @@
             left: 0;
             width: 4px;
             height: 100%;
-            background: #3498db;
+            background: #e67e22; /* Different color for container pages */
             transform: scaleY(0);
             transition: transform 0.3s ease;
             transform-origin: bottom;
@@ -119,7 +119,7 @@
         }
 
         .modify-btn {
-            background: #3498db;
+            background: #e67e22; /* Different color for container pages */
             color: white;
             border: none;
             padding: 0.8rem 1.5rem;
@@ -136,7 +136,7 @@
         }
 
         .modify-btn:hover {
-            background: #2980b9;
+            background: #d35400;
             transform: translateX(5px);
         }
 
@@ -149,22 +149,22 @@
         }
 
         .add-page-card {
-            border: 2px dashed #3498db;
+            border: 2px dashed #e67e22;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            background: rgba(52, 152, 219, 0.05);
+            background: rgba(230, 126, 34, 0.05);
         }
 
         .add-page-card:hover {
-            background: rgba(52, 152, 219, 0.1);
+            background: rgba(230, 126, 34, 0.1);
         }
 
         .add-icon {
             font-size: 2rem;
-            color: #3498db;
+            color: #e67e22;
             margin-bottom: 1rem;
         }
 
@@ -177,7 +177,6 @@
             color: #7f8c8d;
         }
 
-        /* Alert Messages */
         .alert {
             padding: 1rem;
             border-radius: 5px;
@@ -202,8 +201,8 @@
 
     <div class="content-wrapper">
         <div class="page-header">
-            <h2>Content Pages</h2>
-            <p>Manage and modify your website's content pages</p>
+            <h2>Container Pages</h2>
+            <p>Manage and modify your website's container pages</p>
         </div>
 
         <!-- Display Flash Messages -->
@@ -220,8 +219,8 @@
         <?php endif; ?>
 
         <div class="pages-container">
-            <?php if(isset($contentPages) && is_array($contentPages) && count($contentPages) > 0): ?>
-                <?php foreach($contentPages as $page): ?>
+            <?php if(isset($containerPages) && is_array($containerPages) && count($containerPages) > 0): ?>
+                <?php foreach($containerPages as $page): ?>
                     <div class="page-card">
                         <h3 class="page-name"><?= esc($page['title']) ?></h3>
                         <span class="page-status <?= $page['is_active'] ? 'status-active' : 'status-inactive' ?>">
@@ -232,9 +231,9 @@
                             <span><i class="fas fa-sort"></i> Order: <?= esc($page['order_position']) ?></span>
                         </div>
                         <p class="page-info">
-                            Manage and modify the content for <?= esc($page['title']) ?> page
+                            Container page for <?= esc($page['title']) ?>
                         </p>
-                        <a href="<?= base_url('admin/content/modify/' . $page['id']) ?>" class="modify-btn">
+                        <a href="<?= base_url('admin/container/modify/' . $page['id']) ?>" class="modify-btn">
                             <i class="fas fa-edit"></i>
                             Modify
                         </a>
@@ -243,14 +242,14 @@
             <?php else: ?>
                 <div class="no-pages-message">
                     <i class="fas fa-info-circle"></i>
-                    <p>No content pages found. Create your first content page by clicking the "Add New Page" button below.</p>
+                    <p>No container pages found. Create your first container page by clicking the "Add New Container" button below.</p>
                 </div>
             <?php endif; ?>
 
-            <!-- Add New Page Card -->
-            <div class="page-card add-page-card" onclick="window.location.href='<?= base_url('admin/content/create') ?>'">
+            <!-- Add New Container Page Card -->
+            <div class="page-card add-page-card" onclick="window.location.href='<?= base_url('admin/container/create') ?>'">
                 <i class="fas fa-plus-circle add-icon"></i>
-                <h3 class="page-name" style="margin-bottom: 0">Add New Page</h3>
+                <h3 class="page-name" style="margin-bottom: 0">Add New Container</h3>
             </div>
         </div>
     </div>

@@ -11,14 +11,32 @@ use CodeIgniter\Router\RouteCollection;
 // Make sure this is above any other routes that might conflict
 $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
     $routes->get('/', 'AdminController::index');
+    $routes->get('container', 'ContainersController::index');
+    $routes->get('content', 'ContentController::index');
+    $routes->add('content/(:any)', 'ContentController::$1');
+    $routes->add('container/(:any)', 'ContainersController::$1');
     $routes->add('(:any)','AdminController::$1');
+
+    
 
 });
 
-// $routes->group('/admin/navbarmanager', ['namespace' => 'App\Controllers\Admin'], function($routes) {
-//     $routes->get('/', 'Navbarmanager::index');
-//     $routes->add('(:any)','Navbarmanager::$1');
-// });
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+    // Home edit routes
+    $routes->get('home-edit', 'EditHomeController::index');
+    $routes->post('home-edit/addslide', 'EditHomeController::addSlide');
+    $routes->post('home-edit/updateslide', 'EditHomeController::updateSlide');
+    $routes->post('home-edit/deleteslide/(:num)', 'EditHomeController::deleteSlide/$1');
+    $routes->get('home-edit/getslide/(:num)', 'EditHomeController::getSlide/$1');
+    
+    $routes->post('home-edit/addservice', 'EditHomeController::addService');
+    $routes->post('home-edit/updateservice', 'EditHomeController::updateService');
+    $routes->post('home-edit/deleteservice/(:num)', 'EditHomeController::deleteService/$1');
+    $routes->get('home-edit/getservice/(:num)', 'EditHomeController::getService/$1');
+    
+    $routes->post('home-edit/updateorder', 'EditHomeController::updateOrder');
+});
+
 
 
 

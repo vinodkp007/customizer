@@ -128,4 +128,6 @@ nb-configuration.xml
 
 env
 /config/database.php/
+
 database.php
+
