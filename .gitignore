@@ -130,3 +130,4 @@ env
 /config/database.php/
 database.php
 /app/Config/Database.php/
+/public/uploads/containers/

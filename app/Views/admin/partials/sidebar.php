@@ -9,4 +9,5 @@
                 <li><a href="<?= base_url('admin/content')?>"><i class="fas fa-file-alt"></i> Content Pages</a></li>
                 <li><a href="<?= base_url('admin/container')?>"><i class="fas fa-boxes"></i> Containers</a></li>
             </ul>
+            
 </aside>
