@@ -1,21 +1,26 @@
 <?php
+// app/Controllers/Home.php
 
 namespace App\Controllers;
 
 class Home extends BaseController
 {
-    public function index(): string
+    protected $homeCarouselModel;
+    protected $homeServicesModel;
+
+    public function __construct()
     {
-        return view('home');
+        $this->homeCarouselModel = new \App\Models\HomeCarouselModel();
+        $this->homeServicesModel = new \App\Models\HomeServicesModel();
     }
 
-    public function about(): string
+    public function index()
     {
-        return view('about');
-    }
+        $data = [
+            'carouselItems' => $this->homeCarouselModel->orderBy('position', 'ASC')->findAll(),
+            'services' => $this->homeServicesModel->orderBy('position', 'ASC')->findAll()
+        ];
 
-    public function content(): string
-    {
-        return view('contentPage');
+        return view('home', $data);
     }
 }
