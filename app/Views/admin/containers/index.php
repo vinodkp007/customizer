@@ -148,6 +148,21 @@
             color: #7f8c8d;
             margin-bottom: 1.5rem;
         }
+        .page-header {
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -203,7 +218,7 @@
             </div>
         <?php endif; ?>
 
-        <a href="<?= base_url('admin/containers/create') ?>" class="btn btn-create">
+        <a href="<?= base_url('admin/navbarmanager')?>" class="btn btn-create">
             <i class="fas fa-plus"></i> New Container
         </a>
     </div>

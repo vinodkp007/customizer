@@ -49,12 +49,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
     $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
 });
 
-
-$routes->get('content/(:any)', 'Content::index');
-$routes->get('container/(:any)', 'container::index');
-$routes->get('/', 'Home::index');
-
-
+$routes->get('container', 'ContainerController::index');
+$routes->get('container/(:segment)', 'ContainerController::view/$1');
+$routes->get('container/(:segment)/items/(:segment)', 'ContainerController::item/$1/$2');
 
 
 $routes->setAutoRoute(true); 
