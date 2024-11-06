@@ -12,6 +12,7 @@ class Home extends BaseController
     {
         $this->homeCarouselModel = new \App\Models\HomeCarouselModel();
         $this->homeServicesModel = new \App\Models\HomeServicesModel();
+        $this->ComponentModel = new \App\Models\ComponentModel();
     }
 
     public function index()
@@ -19,7 +20,7 @@ class Home extends BaseController
         $data = [
             'carouselItems' => $this->homeCarouselModel->orderBy('position', 'ASC')->findAll(),
             // 'services' => $this->homeServicesModel->orderBy('position', 'ASC')->findAll()
-            'components' => []
+            'components' => $this->ComponentModel->getAllActiveComponents(),
         ];
         
         return view('home', $data);

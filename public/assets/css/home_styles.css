@@ -10,35 +10,146 @@ body {
     color: #333;
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-/* Navbar styles */
+}/* Navbar styles */
+/* Navbar base styles */
 .navbar {
-    background: #2c3e50;
-    padding: 1rem;
+    background: #ffffff;
+    padding: 1.2rem 2rem;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
 }
 
+.navbar:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.nav-container {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+/* Logo styles */
+.logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.logo-container:hover {
+    transform: translateY(-1px);
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0); /* This will turn the logo black */
+}
+
+/* Navigation links */
 .nav-links {
     display: flex;
-    gap: 1rem;
+    gap: 2.5rem;
     list-style: none;
+    margin-left: auto;
+    padding: 0;
+}
+
+.nav-links li {
+    position: relative;
 }
 
 .nav-links a {
-    color: white;
+    color: #2c3e50;
     text-decoration: none;
-    transition: color 0.3s ease;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+    position: relative;
+    letter-spacing: 0.5px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #3498db;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 1px;
 }
 
 .nav-links a:hover {
     color: #3498db;
+    transform: translateY(-1px);
 }
 
-/* Main content styles */
+.nav-links a:hover::after {
+    width: 100%;
+    background: #3498db;
+}
+
+/* Active link style */
+.nav-links a.active {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.nav-links a.active::after {
+    width: 100%;
+    background: #3498db;
+    height: 2.5px;
+}
+
+/* Scrolled state */
+.navbar.scrolled {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .nav-links {
+        gap: 1.5rem;
+    }
+    
+    .logo-img {
+        height: 35px;
+    }
+    
+    .nav-links a {
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile navigation styles */
+@media (max-width: 640px) {
+    .nav-container {
+        padding: 0 15px;
+    }
+    
+    .logo-img {
+        height: 30px;
+    }
+    
+    .nav-links {
+        gap: 1rem;
+    }
+}
+
+
 main {
     margin-top: 60px;
     overflow-x: hidden;

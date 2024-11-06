@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f8f9fa;
+            color: #2c3e50;
+            min-height: 100vh;
+            padding: 3rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2.5rem;
+            padding: 0.5rem;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+            background: #f8f9fa;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .item-content {
+            padding: 1.8rem;
+            position: relative;
+            background: white;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .item-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .item-category {
+            font-size: 0.8rem;
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .gallery-item:hover .item-category {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .item-description {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(44, 62, 80, 0.1), rgba(44, 62, 80, 0.3));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .gallery-item:hover .image-overlay {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 2rem 0;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .gallery-grid {
+                gap: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .gallery-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Stunning Gallery</h1>
+            <p>Immerse yourself in our collection of breathtaking imagery, capturing moments of beauty and wonder from around the world.</p>
+        </div>
+
+        <div class="gallery-grid" id="gallery-grid">
+            <!-- Gallery items will be added by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const galleryItems = [
+            { 
+                id: 1, 
+                title: "Mountain Vista", 
+                description: "Serene mountain landscape at sunset, capturing the majestic peaks and valleys bathed in golden light.",
+                category: "Landscape"
+            },
+            { 
+                id: 2, 
+                title: "Urban Dreams", 
+                description: "Contemporary architectural marvel reaching towards the sky, reflecting the city's ambitions.",
+                category: "Urban"
+            },
+            { 
+                id: 3, 
+                title: "Coastal Serenity", 
+                description: "Pristine beach landscape where crystal waters meet golden sands under an endless sky.",
+                category: "Nature"
+            },
+            { 
+                id: 4, 
+                title: "Forest Mysteries", 
+                description: "Ancient woodland shrouded in morning mist, where every tree tells a story of time.",
+                category: "Nature"
+            },
+            { 
+                id: 5, 
+                title: "Desert Dreams", 
+                description: "Endless dunes sculpted by wind and time, creating nature's most mesmerizing patterns.",
+                category: "Landscape"
+            },
+            { 
+                id: 6, 
+                title: "City Lights", 
+                description: "Metropolitan nightscape coming alive with countless lights painting the urban canvas.",
+                category: "Urban"
+            },
+            { 
+                id: 7, 
+                title: "Ocean Waves", 
+                description: "Powerful waves crash against ancient cliffs, displaying nature's raw beauty and force.",
+                category: "Nature"
+            },
+            { 
+                id: 8, 
+                title: "Mountain Lake", 
+                description: "Mirror-like mountain lake reflecting the surrounding peaks in perfect symmetry.",
+                category: "Landscape"
+            }
+        ];
+
+        function createGalleryItem(item) {
+            return `
+                <div class="gallery-item">
+                    <div class="image-overlay"></div>
+                    <img src="https://picsum.photos/800/600?random=${item.id}" alt="${item.title}" loading="lazy">
+                    <div class="item-content">
+                        <div class="item-header">
+                            <h3 class="item-title">${item.title}</h3>
+                            <span class="item-category">${item.category}</span>
+                        </div>
+                        <p class="item-description">${item.description}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGallery() {
+            const galleryGrid = document.getElementById("gallery-grid");
+            galleryGrid.innerHTML = galleryItems.map(item => createGalleryItem(item)).join("");
+        }
+
+        document.addEventListener("DOMContentLoaded", renderGallery);
+    </script>
+</body>
+</html>
