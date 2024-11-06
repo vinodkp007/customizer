@@ -16,50 +16,43 @@
         <main class="main-content">
             <div class="page-header">
                 <h1>Dashboard Overview</h1>
-                
             </div>
 
             <!-- Quick Stats -->
             <div class="quick-stats">
                 <div class="stat-card">
                     <div class="icon"><i class="fas fa-file-alt"></i></div>
-                    <h3>12</h3>
+                    <h3><?= $stats['content_pages'] ?></h3>
                     <p>Content Pages</p>
                 </div>
                 <div class="stat-card">
                     <div class="icon"><i class="fas fa-boxes"></i></div>
-                    <h3>8</h3>
+                    <h3><?= $stats['containers'] ?></h3>
                     <p>Containers</p>
                 </div>
                 <div class="stat-card">
                     <div class="icon"><i class="fas fa-bars"></i></div>
-                    <h3>6</h3>
+                    <h3><?= $stats['nav_items'] ?></h3>
                     <p>Nav Items</p>
-                </div>
-                <div class="stat-card">
-                    <div class="icon"><i class="fas fa-images"></i></div>
-                    <h3>24</h3>
-                    <p>Media Files</p>
                 </div>
             </div>
 
             <!-- Quick Actions -->
             <div class="quick-actions">
-                <button class="action-btn">
+                <a href="<?= base_url('admin/navbarmanager')?>" class="action-btn" style="text-decoration: none;">
                     <i class="fas fa-plus-circle"></i>
                     Add Content Page
-                </button>
-                <button class="action-btn">
+                </a>
+                <a href="<?= base_url('admin/navbarmanager')?>" class="action-btn" style="text-decoration: none;">
                     <i class="fas fa-plus-square"></i>
                     New Container
-                </button>
-                <button class="action-btn">
+                </a>
+                <a href="<?= base_url('admin/navbarmanager')?>" class="action-btn" style="text-decoration: none;">
                     <i class="fas fa-link"></i>
                     Add Nav Item
-                </button>
+                </a>
             </div>
         </main>
     </div>
 </body>
-    
 </html>
