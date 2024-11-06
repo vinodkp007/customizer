@@ -136,30 +136,29 @@
 <?= $this->include('partials/header') ?>
 <?= $this->include('partials/navbar') ?>
 <body>
-    <main>
+<main>
         <div class="about-hero">
-            <img src="https://placehold.co/1920x400" alt="Hero Image">
+            <img src="<?= esc($hero_image) ?>" alt="Hero Image">
             <div class="hero-content">
-                <h1>Exploring Nature's Beauty</h1>
-                <div class="hero-pixels">1920 x 400 pixels</div>
+                <h1><?= esc($hero_title) ?></h1>
+                <?php if ($hero_image === 'https://placehold.co/1920x400'): ?>
+                    <div class="hero-pixels">1920 x 400 pixels</div>
+                <?php endif; ?>
             </div>
         </div>
 
         <div class="about-content">
             <section class="content-section visible">
-                <h2 class="section-title">The Journey Through Wilderness</h2>
-                <p>
-                    Nature has always been a source of inspiration and wonder. From the towering peaks of ancient mountains to the gentle whisper of forest streams, every moment spent in the wilderness is a story waiting to be told. The raw beauty of untamed landscapes reminds us of our connection to the earth and the importance of preserving these natural sanctuaries for future generations.
-                </p>
-                <p>
-                    As we venture deeper into these pristine environments, we discover not just the physical beauty of our natural world, but also the profound impact it has on our well-being. The crisp mountain air, the symphony of birdsong, and the intricate patterns of wildlife behavior all contribute to an experience that transcends ordinary existence.
-                </p>
-                <p>
-                    Each journey into nature offers new perspectives and challenges our understanding of the world around us. Whether scaling steep cliffs, traversing dense forests, or simply sitting in quiet contemplation by a crystal-clear lake, these experiences shape our appreciation for the delicate balance of life on Earth.
-                </p>
+                <h2 class="section-title"><?= esc($section_title) ?></h2>
+                <?php if (!empty($sections)): ?>
+                    <?php foreach ($sections as $section): ?>
+                        <p><?= esc($section['content']) ?></p>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </section>
         </div>
     </main>
+
 
     <script>
         // Add intersection observer to handle scroll animations

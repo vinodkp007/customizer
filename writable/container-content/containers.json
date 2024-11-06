@@ -4,19 +4,19 @@
             "slug": "java",
             "title": "Java Programming",
             "description": "Learn Java programming from basics to advanced concepts",
-            "image_url": "uploads/containers/Java-Logo"
+            "image_url": "/uploads/containers/toy-1223792_640.jpg"
         },
         {
             "slug": "python",
             "title": "Python Development",
             "description": "Master Python programming with hands-on tutorials",
-            "image_url": "uploads/containers/Java-Logo"
+            "image_url": "/uploads/containers/toy-1223792_640.jpg"
         },
         {
             "slug": "web-dev",
             "title": "Web Development",
             "description": "Full-stack web development tutorials and projects",
-            "image_url": "uploads/containers/Java-Logo"
+            "image_url": "/uploads/containers/toy-1223792_640.jpg"
         }
     ]
 }
