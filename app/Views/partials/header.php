@@ -7,5 +7,6 @@
     <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/about.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/home_styles.css') ?>">
     
+    
 </head>
 <body>

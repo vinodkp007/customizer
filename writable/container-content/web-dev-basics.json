@@ -1,0 +1,42 @@
+{
+    "title": "Web Development Basics",
+    "hero_image": "assets/images/containers/web-dev-hero.jpg",
+    "meta_description": "Comprehensive guide to web development fundamentals",
+    "sections": [
+      {
+        "type": "header",
+        "content": {
+          "title": "Getting Started with Web Development",
+          "subtitle": "Your journey to becoming a web developer starts here"
+        }
+      },
+      {
+        "type": "text",
+        "content": {
+          "body": "Web development is the process of creating websites and web applications..."
+        }
+      },
+      {
+        "type": "grid",
+        "content": {
+          "items": [
+            {
+              "title": "HTML Basics",
+              "description": "Structure of web pages",
+              "image": "assets/images/containers/html.jpg"
+            },
+            {
+              "title": "CSS Fundamentals",
+              "description": "Styling web pages",
+              "image": "assets/images/containers/css.jpg"
+            },
+            {
+              "title": "JavaScript Essentials",
+              "description": "Making pages interactive",
+              "image": "assets/images/containers/js.jpg"
+            }
+          ]
+        }
+      }
+    ]
+  }

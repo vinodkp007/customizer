@@ -1,5 +1,4 @@
 <?php
-// app/Controllers/Admin/EditHomeController.php
 
 namespace App\Controllers\Admin;
 
@@ -9,26 +8,27 @@ use CodeIgniter\HTTP\ResponseInterface;
 class EditHomeController extends BaseController
 {
     protected $homeCarouselModel;
-    protected $homeServicesModel;
+    protected $componentModel;
+    protected $componentItemModel;
 
     public function __construct()
     {
-        // Load your models
         $this->homeCarouselModel = new \App\Models\HomeCarouselModel();
-        $this->homeServicesModel = new \App\Models\HomeServicesModel();
+        $this->componentModel = new \App\Models\ComponentModel();
+        $this->componentItemModel = new \App\Models\ComponentItemModel();
     }
 
     public function index()
     {
         $data = [
             'carouselItems' => $this->homeCarouselModel->orderBy('position', 'ASC')->findAll(),
-            'services' => $this->homeServicesModel->orderBy('position', 'ASC')->findAll()
+            'components' => $this->componentModel->getAllActiveComponents()
         ];
 
         return view('admin/editHome', $data);
     }
 
-    // Carousel Management Methods
+    // Slide Management Methods
     public function addSlide()
     {
         $rules = [
@@ -45,7 +45,6 @@ class EditHomeController extends BaseController
         $newName = $image->getRandomName();
         $image->move(FCPATH . 'uploads/carousel', $newName);
 
-        // Get the last position
         $lastPosition = $this->homeCarouselModel->selectMax('position')->get()->getRow()->position ?? 0;
 
         $data = [
@@ -80,14 +79,12 @@ class EditHomeController extends BaseController
             'description' => $this->request->getPost('description')
         ];
 
-        // Handle image update if new image is uploaded
         $image = $this->request->getFile('image');
         if ($image && $image->isValid() && !$image->hasMoved()) {
             $newName = $image->getRandomName();
             $image->move(FCPATH . 'uploads/carousel', $newName);
             $data['image'] = 'uploads/carousel/' . $newName;
 
-            // Delete old image
             $oldImage = $this->homeCarouselModel->find($id)['image'];
             if (file_exists(FCPATH . $oldImage)) {
                 unlink(FCPATH . $oldImage);
@@ -108,7 +105,6 @@ class EditHomeController extends BaseController
             return redirect()->back()->with('error', 'Slide not found');
         }
 
-        // Delete image file
         if (file_exists(FCPATH . $slide['image'])) {
             unlink(FCPATH . $slide['image']);
         }
@@ -129,10 +125,119 @@ class EditHomeController extends BaseController
         return $this->response->setJSON($slide);
     }
 
-    // Services Management Methods
-    public function addService()
+    public function updateSlideOrder()
+{
+    $itemOrder = json_decode($this->request->getPost('itemOrder'), true);
+    
+    if (!$itemOrder) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Invalid order data'
+        ]);
+    }
+
+    $db = \Config\Database::connect();
+    $db->transStart();
+    
+    try {
+        foreach ($itemOrder as $item) {
+            $this->homeCarouselModel->update($item['id'], ['position' => $item['position']]);
+        }
+        
+        $db->transCommit();
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Slide order updated successfully'
+        ]);
+    } catch (\Exception $e) {
+        $db->transRollback();
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Failed to update slide order'
+        ]);
+    }
+}
+
+
+
+    // Component Management Methods
+    public function addComponent()
     {
         $rules = [
+            'title' => 'required|min_length[3]|max_length[255]',
+            'slug' => 'required|min_length[3]|max_length[255]|is_unique[components.slug]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', $this->validator->getErrors());
+        }
+
+        $data = [
+            'title' => $this->request->getPost('title'),
+            'slug' => $this->request->getPost('slug'),
+            'is_active' => 1,
+            'position' => $this->componentModel->getNextPosition()
+        ];
+
+        if ($this->componentModel->insert($data)) {
+            return redirect()->back()->with('success', 'Component added successfully');
+        }
+
+        return redirect()->back()->with('error', 'Failed to add component');
+    }
+
+    public function updateComponent()
+    {
+        $rules = [
+            'id' => 'required|numeric',
+            'title' => 'required|min_length[3]|max_length[255]',
+            'slug' => 'required|min_length[3]|max_length[255]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', $this->validator->getErrors());
+        }
+
+        $id = $this->request->getPost('id');
+        $data = [
+            'title' => $this->request->getPost('title'),
+            'slug' => $this->request->getPost('slug')
+        ];
+
+        if ($this->componentModel->update($id, $data)) {
+            return redirect()->back()->with('success', 'Component updated successfully');
+        }
+
+        return redirect()->back()->with('error', 'Failed to update component');
+    }
+
+    public function deleteComponent($id)
+    {
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $items = $this->componentItemModel->where('component_id', $id)->findAll();
+            foreach ($items as $item) {
+                if (file_exists(FCPATH . $item['image'])) {
+                    unlink(FCPATH . $item['image']);
+                }
+            }
+            $this->componentItemModel->where('component_id', $id)->delete();
+            $this->componentModel->delete($id);
+            
+            $db->transCommit();
+            return redirect()->back()->with('success', 'Component deleted successfully');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return redirect()->back()->with('error', 'Failed to delete component');
+        }
+    }
+
+    public function addComponentItem()
+    {
+        $rules = [
+            'component_id' => 'required|numeric',
             'title' => 'required|min_length[3]|max_length[255]',
             'description' => 'required|min_length[3]',
             'image' => 'uploaded[image]|is_image[image]|max_size[image,2048]'
@@ -144,26 +249,25 @@ class EditHomeController extends BaseController
 
         $image = $this->request->getFile('image');
         $newName = $image->getRandomName();
-        $image->move(FCPATH . 'uploads/services', $newName);
-
-        // Get the last position
-        $lastPosition = $this->homeServicesModel->selectMax('position')->get()->getRow()->position ?? 0;
+        $image->move(FCPATH . 'uploads/components', $newName);
 
         $data = [
+            'component_id' => $this->request->getPost('component_id'),
             'title' => $this->request->getPost('title'),
             'description' => $this->request->getPost('description'),
-            'image' => 'uploads/services/' . $newName,
-            'position' => $lastPosition + 1
+            'image' => 'uploads/components/' . $newName,
+            'position' => $this->componentItemModel->getNextPosition($this->request->getPost('component_id')),
+            'is_active' => 1
         ];
 
-        if ($this->homeServicesModel->insert($data)) {
-            return redirect()->back()->with('success', 'Service added successfully');
+        if ($this->componentItemModel->insert($data)) {
+            return redirect()->back()->with('success', 'Item added successfully');
         }
 
-        return redirect()->back()->with('error', 'Failed to add service');
+        return redirect()->back()->with('error', 'Failed to add item');
     }
 
-    public function updateService()
+    public function updateComponentItem()
     {
         $rules = [
             'id' => 'required|numeric',
@@ -181,89 +285,118 @@ class EditHomeController extends BaseController
             'description' => $this->request->getPost('description')
         ];
 
-        // Handle image update if new image is uploaded
         $image = $this->request->getFile('image');
         if ($image && $image->isValid() && !$image->hasMoved()) {
             $newName = $image->getRandomName();
-            $image->move(FCPATH . 'uploads/services', $newName);
-            $data['image'] = 'uploads/services/' . $newName;
+            $image->move(FCPATH . 'uploads/components', $newName);
+            $data['image'] = 'uploads/components/' . $newName;
 
-            // Delete old image
-            $oldImage = $this->homeServicesModel->find($id)['image'];
+            $oldImage = $this->componentItemModel->find($id)['image'];
             if (file_exists(FCPATH . $oldImage)) {
                 unlink(FCPATH . $oldImage);
             }
         }
 
-        if ($this->homeServicesModel->update($id, $data)) {
-            return redirect()->back()->with('success', 'Service updated successfully');
+        if ($this->componentItemModel->update($id, $data)) {
+            return redirect()->back()->with('success', 'Item updated successfully');
         }
 
-        return redirect()->back()->with('error', 'Failed to update service');
+        return redirect()->back()->with('error', 'Failed to update item');
     }
 
-    public function deleteService($id)
+    public function deleteComponentItem($id)
     {
-        $service = $this->homeServicesModel->find($id);
-        if (!$service) {
-            return redirect()->back()->with('error', 'Service not found');
+        $item = $this->componentItemModel->find($id);
+        if (!$item) {
+            return redirect()->back()->with('error', 'Item not found');
         }
 
-        // Delete image file
-        if (file_exists(FCPATH . $service['image'])) {
-            unlink(FCPATH . $service['image']);
+        if (file_exists(FCPATH . $item['image'])) {
+            unlink(FCPATH . $item['image']);
         }
 
-        if ($this->homeServicesModel->delete($id)) {
-            return redirect()->back()->with('success', 'Service deleted successfully');
+        if ($this->componentItemModel->delete($id)) {
+            return redirect()->back()->with('success', 'Item deleted successfully');
         }
 
-        return redirect()->back()->with('error', 'Failed to delete service');
+        return redirect()->back()->with('error', 'Failed to delete item');
     }
 
-    public function getService($id)
+    public function getComponent($id)
     {
-        $service = $this->homeServicesModel->find($id);
-        if (!$service) {
-            return $this->response->setJSON(['error' => 'Service not found'])->setStatusCode(404);
+        $component = $this->componentModel->find($id);
+        if (!$component) {
+            return $this->response->setJSON(['error' => 'Component not found'])->setStatusCode(404);
         }
-        return $this->response->setJSON($service);
+        return $this->response->setJSON($component);
     }
 
-    // Order Management
-    public function updateOrder()
+    public function getComponentItem($id)
     {
-        $type = $this->request->getPost('type');
-        $itemOrder = json_decode($this->request->getPost('itemOrder'), true);
-        
-        if (!$itemOrder) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Invalid order data'
-            ]);
+        $item = $this->componentItemModel->find($id);
+        if (!$item) {
+            return $this->response->setJSON(['error' => 'Item not found'])->setStatusCode(404);
         }
+        return $this->response->setJSON($item);
+    }
 
-        $model = $type === 'carousel' ? $this->homeCarouselModel : $this->homeServicesModel;
+    public function updateComponentOrder()
+{
+    $itemOrder = json_decode($this->request->getPost('itemOrder'), true);
+    
+    if (!$itemOrder) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Invalid order data'
+        ]);
+    }
+
+    $db = \Config\Database::connect();
+    $db->transStart();
+    
+    try {
+        foreach ($itemOrder as $item) {
+            $this->componentModel->update($item['id'], ['position' => $item['position']]);
+        }
         
-        \Config\Database::connect()->transBegin();
+        $db->transCommit();
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Component order updated successfully'
+        ]);
+    } catch (\Exception $e) {
+        $db->transRollback();
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Failed to update component order'
+        ]);
+    }
+}
+
+    public function updateComponentItemOrder()
+    {
+        $data = $this->request->getJSON();
+        $componentId = $data->component_id;
+        $items = $data->items;
         
+        $db = \Config\Database::connect();
+        $db->transStart();
+
         try {
-            foreach ($itemOrder as $item) {
-                $model->update($item['id'], ['position' => $item['position']]);
+            foreach ($items as $item) {
+                $this->componentItemModel->update($item->id, ['position' => $item->position]);
             }
             
-            \Config\Database::connect()->transCommit();
-            
+            $db->transCommit();
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Order updated successfully'
+                'message' => 'Item order updated successfully'
             ]);
         } catch (\Exception $e) {
-            \Config\Database::connect()->transRollback();
-            
+            $db->transRollback();
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update order'
+                'message' => 'Failed to update item order'
             ]);
         }
     }
