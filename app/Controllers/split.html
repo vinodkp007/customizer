@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Split Layouts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 60px auto 0;
+            padding: 4rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .page-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        .splits-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .split-container {
+            display: flex;
+            height: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .split-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .image-side {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .split-container:hover .image-side img {
+            transform: scale(1);
+        }
+
+        .content-side {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.2s;
+        }
+
+        .split-container.visible .content-side {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .content-side:hover .section-title::after {
+            width: 100px;
+        }
+
+        .content-text {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .read-more-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            align-self: flex-start;
+        }
+
+        .read-more-btn:hover {
+            background: #2980b9;
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 968px) {
+            .split-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .image-side {
+                height: 200px;
+            }
+
+            .content-side {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <header class="page-header">
+            <h1 class="page-title">Featured Collections</h1>
+        </header>
+
+        <div class="splits-container">
+            <div class="split-container">
+                <div class="image-side">
+                    <img src="https://picsum.photos/seed/1/800/600" alt="Nature landscape">
+                </div>
+                <div class="content-side">
+                    <h2 class="section-title">Natural Wonders</h2>
+                    <p class="content-text">Discover breathtaking landscapes and natural phenomena that showcase Earth's incredible beauty. From majestic mountains to serene lakes, experience nature at its finest.</p>
+                    <a href="#" class="read-more-btn">Explore More</a>
+                </div>
+            </div>
+
+            <div class="split-container">
+                <div class="image-side">
+                    <img src="https://picsum.photos/seed/2/800/600" alt="Urban architecture">
+                </div>
+                <div class="content-side">
+                    <h2 class="section-title">Urban Exploration</h2>
+                    <p class="content-text">Journey through modern cityscapes and architectural marvels. Experience the pulse of urban life through stunning photography of city streets and skylines.</p>
+                    <a href="#" class="read-more-btn">Discover Cities</a>
+                </div>
+            </div>
+
+            <div class="split-container">
+                <div class="image-side">
+                    <img src="https://picsum.photos/seed/3/800/600" alt="Cultural heritage">
+                </div>
+                <div class="content-side">
+                    <h2 class="section-title">Cultural Heritage</h2>
+                    <p class="content-text">Immerse yourself in diverse cultural traditions and historical landmarks. Each image tells a story of heritage, tradition, and human creativity.</p>
+                    <a href="#" class="read-more-btn">Learn More</a>
+                </div>
+            </div>
+
+            <div class="split-container">
+                <div class="image-side">
+                    <img src="https://picsum.photos/seed/4/800/600" alt="Wildlife photography">
+                </div>
+                <div class="content-side">
+                    <h2 class="section-title">Wildlife Encounters</h2>
+                    <p class="content-text">Get up close with amazing wildlife from around the globe. Our collection captures the beauty and diversity of Earth's magnificent creatures in their natural habitats.</p>
+                    <a href="#" class="read-more-btn">View Gallery</a>
+                </div>
+            </div>
+
+            <div class="split-container">
+                <div class="image-side">
+                    <img src="https://picsum.photos/seed/5/800/600" alt="Abstract art">
+                </div>
+                <div class="content-side">
+                    <h2 class="section-title">Abstract Visions</h2>
+                    <p class="content-text">Explore the world of abstract photography where colors, shapes, and patterns create stunning visual compositions that challenge perception.</p>
+                    <a href="#" class="read-more-btn">See Collection</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.2,
+                rootMargin: '50px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.split-container').forEach(container => {
+                observer.observe(container);
+            });
+        });
+    </script>
+</body>
+</html>

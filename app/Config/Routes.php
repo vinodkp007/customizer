@@ -30,6 +30,19 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
    $routes->post('containers/(:num)/items/update/(:segment)', 'ContainerItemsController::updateItem/$1/$2');
    $routes->get('containers/(:num)/items/delete/(:segment)', 'ContainerItemsController::deleteItem/$1/$2');
 
+
+
+
+   $routes->group('gallery', function($routes) {
+    $routes->get('/', 'GalleryController::index');
+    $routes->get('modify/(:num)', 'GalleryController::modify/$1');
+    $routes->post('save', 'GalleryController::save');
+    $routes->post('update-order', 'GalleryController::updateOrder');
+    $routes->get('delete-item/(:num)', 'GalleryController::deleteItem/$1');
+});
+
+    
+
      // Home edit routes
      $routes->get('home-edit', 'EditHomeController::index');
      $routes->post('home-edit/addslide', 'EditHomeController::addSlide');
@@ -45,6 +58,7 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
      $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
      $routes->add('(:any)','AdminController::$1');
 
+
 });
 
 $routes->group('admin/footermanager', ['namespace' => 'App\Controllers\Admin'], function($routes) {
@@ -57,6 +71,7 @@ $routes->group('admin/footermanager', ['namespace' => 'App\Controllers\Admin'], 
 
   $routes->post('updateQuickLinks', 'FooterManager::updateQuickLinks');
 });
+
 
 
 
