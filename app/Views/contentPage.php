@@ -158,7 +158,7 @@
             </section>
         </div>
     </main>
-
+    <?= $this->include('partials/footer') ?>
 
     <script>
         // Add intersection observer to handle scroll animations

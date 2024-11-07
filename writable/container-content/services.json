@@ -1,3 +1,16 @@
 {
-    "items": []
+
+    "items": [
+        {
+            "id": "672c71a5904ff",
+            "title": "A Bird",
+            "description": "Short description about the page",
+            "content": "This is the content page",
+            "status": "published",
+            "image": "uploads\/containers\/1730965925_19d753783d18f780bdfa.jpg",
+            "created_at": "2024-11-07 07:52:05",
+            "updated_at": "2024-11-07 07:52:05"
+        }
+    ]
+
 }
