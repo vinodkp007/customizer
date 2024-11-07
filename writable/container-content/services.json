@@ -1,28 +1,14 @@
 {
     "items": [
         {
-            "id": "672afb231fcbf",
-            "title": "Test",
-            "description": "Test for service",
-            "content": "Hiii",
+            "id": "672c71a5904ff",
+            "title": "A Bird",
+            "description": "Short description about the page",
+            "content": "This is the content page",
             "status": "published",
-            "image": "uploads\/containers\/1730870051_dcb01c1574234c424048.png",
-            "created_at": "2024-11-06 05:14:11",
-            "updated_at": "2024-11-06 05:14:11"
-        }
-    ]
-}
-{
-    "items": [
-        {
-            "id": "6729f9ee8e17b",
-            "title": "Service test",
-            "description": "Testing Testing Testing Testing Testing Testing ",
-            "content": "Testing Testing Testing Testing Testing Testing Testing Testing Testing Testing ",
-            "status": "published",
-            "image": "uploads\/containers\/1730804206_19e1280c62d42a2f5287.jpg",
-            "created_at": "2024-11-05 10:56:46",
-            "updated_at": "2024-11-05 10:56:46"
+            "image": "uploads\/containers\/1730965925_19d753783d18f780bdfa.jpg",
+            "created_at": "2024-11-07 07:52:05",
+            "updated_at": "2024-11-07 07:52:05"
         }
     ]
 }
