@@ -325,6 +325,7 @@ body {
                     <select id="type" name="type" class="form-control" required>
                         <option value="content">Content Page</option>
                         <option value="container">Container Page</option>
+                        <option value="gallery">Gallery Page</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">
