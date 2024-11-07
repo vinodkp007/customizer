@@ -12,7 +12,7 @@
             "platform": "instagram",
             "url": "https:\/\/www.instagram.com\/",
             "icon": "fab fa-instagram",
-            "order_position": 1,
+            "order_position": 2,
             "is_active": true
         },
         {
@@ -22,13 +22,20 @@
             "icon": "fab fa-linkedin",
             "order_position": 3,
             "is_active": true
+        },
+        {
+            "id": 4,
+            "platform": "youtube",
+            "url": "https:\/\/youtube.com\/",
+            "icon": "fab fa-youtube",
+            "order_position": 3,
+            "is_active": true
         }
     ],
     "footer_links": [
         2,
-        11,
-        14,
-        31,
-        17
+        19,
+        17,
+        12
     ]
 }
