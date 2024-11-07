@@ -505,7 +505,7 @@ textarea.form-control {
     
     <div class="main-content">
         <div class="container">
-            <h1 class="page-title">Content Manager</h1>
+            <h1 class="page-title">Home Manager</h1>
             
             <?php if(session()->getFlashdata('success')): ?>
                 <div class="message success">

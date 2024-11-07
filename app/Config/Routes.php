@@ -30,6 +30,17 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
    $routes->post('containers/(:num)/items/update/(:segment)', 'ContainerItemsController::updateItem/$1/$2');
    $routes->get('containers/(:num)/items/delete/(:segment)', 'ContainerItemsController::deleteItem/$1/$2');
 
+
+
+
+   $routes->group('gallery', function($routes) {
+    $routes->get('/', 'GalleryController::index');
+    $routes->get('modify/(:num)', 'GalleryController::modify/$1');
+    $routes->post('save', 'GalleryController::save');
+    $routes->post('update-order', 'GalleryController::updateOrder');
+    $routes->get('delete-item/(:num)', 'GalleryController::deleteItem/$1');
+});
+
     
 
 });
@@ -62,7 +73,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
 
 });
 
-
+$routes->get('gallery/(:any)', 'GalleryController::index');
 $routes->get('content/(:any)', 'Content::index');
 $routes->get('container/(:any)', 'container::index');
 $routes->get('/', 'Home::index');
