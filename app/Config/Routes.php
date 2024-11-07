@@ -73,7 +73,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($rout
 
 });
 
-$routes->get('gallery/(:any)', 'GalleryController::index');
+
+$routes->get('gallery', 'GalleryController::index');
+$routes->get('gallery/(:segment)', 'GalleryController::index/$1');
 $routes->get('content/(:any)', 'Content::index');
 $routes->get('container/(:any)', 'container::index');
 $routes->get('/', 'Home::index');

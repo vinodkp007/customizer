@@ -2,12 +2,28 @@
 
 namespace App\Controllers;
 
+use App\Models\NavbarItemModel;
+use App\Models\GalleryPageModel;
+use App\Models\GalleryItemModel;
+
 class GalleryController extends BaseController
 {
-    public function index()
+    protected $navbarItemModel;
+    protected $galleryPageModel;
+    protected $galleryItemModel;
+
+    public function __construct()
     {
-        $data = [
-            'title' => 'Featured Collections',
+        $this->navbarItemModel = new NavbarItemModel();
+        $this->galleryPageModel = new GalleryPageModel();
+        $this->galleryItemModel = new GalleryItemModel();
+    }
+
+    public function index($slug = null)
+    {
+        // Default featured collections data
+        $defaultData = [
+            'title' => 'Default Collections',
             'collections' => [
                 [
                     'id' => 1,
@@ -49,21 +65,66 @@ class GalleryController extends BaseController
                     'button_text' => 'See Collection',
                     'alt_text' => 'Abstract art'
                 ]
+            ],
+            'meta' => [
+                'description' => 'Explore our curated collection of stunning imagery featuring nature, urban life, culture, wildlife, and abstract art.',
+                'keywords' => 'photography, gallery, nature, urban, culture, wildlife, abstract art'
             ]
         ];
 
-        // Add metadata for SEO
-        $data['meta'] = [
-            'description' => 'Explore our curated collection of stunning imagery featuring nature, urban life, culture, wildlife, and abstract art.',
-            'keywords' => 'photography, gallery, nature, urban, culture, wildlife, abstract art'
-        ];
+        // If no slug provided, return default data
+        if (empty($slug)) {
+            return view('gallery', $defaultData);
+        }
 
-        return view('gallery', $data);
-    }
+        try {
+            // Find navbar item by slug
+            $navbarItem = $this->navbarItemModel->where('slug', $slug)
+                                               ->where('type', 'gallery')
+                                               ->first();
 
-    public function detail($id)
-    {
-        // For future implementation of detail pages
-        // You can expand this to show individual collection details
+            // If no navbar item found, return default data
+            if (!$navbarItem) {
+                return view('gallery', $defaultData);
+            }
+
+            // Get gallery page data
+            $galleryPage = $this->galleryPageModel->getFullGalleryPage($navbarItem['id']);
+
+            // If no gallery page found, return default data
+            if (!$galleryPage) {
+                return view('gallery', $defaultData);
+            }
+
+            // Format gallery items to match the collections structure
+            $collections = array_map(function($item) {
+                return [
+                    'id' => $item['id'],
+                    'image' => base_url($item['image']),
+                    'title' => $item['title'],
+                    'description' => $item['description'],
+                    'button_text' => 'View Details',
+                    'alt_text' => $item['alt_text']
+                ];
+            }, $galleryPage['items']);
+
+            $data = [
+                'title' => $galleryPage['page_title'],
+                'collections' => $collections,
+                'meta' => [
+                    'description' => $galleryPage['meta_description'],
+                    'keywords' => $galleryPage['meta_keywords']
+                ]
+            ];
+
+            return view('gallery', $data);
+
+        } catch (\Exception $e) {
+            // Log the error
+            log_message('error', 'Error in GalleryController: ' . $e->getMessage());
+            
+            // Return default data if anything goes wrong
+            return view('gallery', $defaultData);
+        }
     }
 }
