@@ -1,4 +1,4 @@
-<footer class="footer">
+<!-- <footer class="footer">
     <div class="footer-content">
         <div class="footer-section">
             <h3>About Us</h3>
@@ -27,4 +27,20 @@
 
 <script src="<?= base_url(); ?>/assets/js/home_script.js"></script>
 </body>
-</html>
+</html> -->
+
+<!-- Dynamic Footer -->
+
+<style>
+/* Your footer CSS here */
+.main-footer {
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 3rem 0 0;
+    margin-top: auto;
+}
+
+
+</style>
+<link rel="stylesheet" href="<?= base_url('assets/css/footer.css') ?>">
+<?= generate_footer() ?>

@@ -13,7 +13,7 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
     $routes->get('/', 'AdminController::index');
     $routes->get('container', 'ContainersController::index');
     $routes->get('content', 'ContentController::index');
-    $routes->add('content/(:any)', 'ContentController::$1');
+    $routes->add('content/(:any)', 'ContentController::index');
     $routes->add('container/(:any)', 'ContainersController::$1');
    
     $routes->get('containers', 'ContainersController::index');
@@ -30,38 +30,41 @@ $routes->group('/admin', ['namespace' => 'App\Controllers\Admin'], function($rou
    $routes->post('containers/(:num)/items/update/(:segment)', 'ContainerItemsController::updateItem/$1/$2');
    $routes->get('containers/(:num)/items/delete/(:segment)', 'ContainerItemsController::deleteItem/$1/$2');
 
-    
+     // Home edit routes
+     $routes->get('home-edit', 'EditHomeController::index');
+     $routes->post('home-edit/addslide', 'EditHomeController::addSlide');
+     $routes->post('home-edit/updateslide', 'EditHomeController::updateSlide');
+     $routes->post('home-edit/deleteslide/(:num)', 'EditHomeController::deleteSlide/$1');
+     $routes->get('home-edit/getSlide/(:num)', 'EditHomeController::getSlide/$1');
+     $routes->get('home-edit/getComponent/(:num)', 'EditHomeController::getComponent/$1');
+     $routes->get('home-edit/getComponentItem/(:num)', 'EditHomeController::getComponentItem/$1');
+     $routes->add('home-edit/(:any)', 'EditHomeController::$1');
+     $routes->get('navbarmanager', 'NavbarManager::index');
+     $routes->post('navbarmanager/add', 'NavbarManager::add');
+     $routes->post('navbarmanager/delete/(:num)', 'NavbarManager::delete/$1');
+     $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
+     $routes->add('(:any)','AdminController::$1');
 
 });
 
+$routes->group('admin/footermanager', ['namespace' => 'App\Controllers\Admin'], function($routes) {
+  $routes->get('/', 'FooterManager::index');
+  $routes->post('updateSettings', 'FooterManager::updateSettings');
+  $routes->post('addSocialLink', 'FooterManager::addSocialLink');
+  $routes->post('deleteSocialLink/(:num)', 'FooterManager::deleteSocialLink/$1');
+  $routes->post('updateSocialLinksOrder', 'FooterManager::updateSocialLinksOrder');
+  $routes->post('toggleSocialLink/(:num)', 'FooterManager::toggleSocialLink/$1');
 
-   // Container base routes
-   
-
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
-    // Home edit routes
-    $routes->get('home-edit', 'EditHomeController::index');
-    $routes->post('home-edit/addslide', 'EditHomeController::addSlide');
-    $routes->post('home-edit/updateslide', 'EditHomeController::updateSlide');
-    $routes->post('home-edit/deleteslide/(:num)', 'EditHomeController::deleteSlide/$1');
-    $routes->get('home-edit/getSlide/(:num)', 'EditHomeController::getSlide/$1');
-    $routes->get('home-edit/getComponent/(:num)', 'EditHomeController::getComponent/$1');
-    $routes->get('home-edit/getComponentItem/(:num)', 'EditHomeController::getComponentItem/$1');
-    $routes->add('home-edit/(:any)', 'EditHomeController::$1');
+  $routes->post('updateQuickLinks', 'FooterManager::updateQuickLinks');
 });
 
 
 
 
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin'], function($routes) {
-    $routes->get('navbarmanager', 'NavbarManager::index');
-    $routes->post('navbarmanager/add', 'NavbarManager::add');
-    $routes->post('navbarmanager/delete/(:num)', 'NavbarManager::delete/$1');
-    $routes->post('navbarmanager/updateorder', 'NavbarManager::updateOrder');
-    $routes->add('(:any)','AdminController::$1');
 
-});
 
+
+$routes->add('content/(:any)', 'Content::index');
 $routes->get('container', 'ContainerController::index');
 $routes->get('container/(:segment)', 'ContainerController::view/$1');
 $routes->get('container/(:segment)/items/(:segment)', 'ContainerController::item/$1/$2');

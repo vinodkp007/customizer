@@ -1,0 +1,34 @@
+{
+    "company_info": {
+        "company_name": "Right Turn",
+        "company_email": "rightturn@gamil.com",
+        "company_phone": "08867355836",
+        "company_address": "Lal bhag ",
+        "company_description": "Web and SEO and\r\n"
+    },
+    "social_links": [
+        {
+            "id": 1,
+            "platform": "instagram",
+            "url": "https:\/\/www.instagram.com\/",
+            "icon": "fab fa-instagram",
+            "order_position": 1,
+            "is_active": true
+        },
+        {
+            "id": 3,
+            "platform": "linkedin",
+            "url": "https:\/\/www.linkedin.com\/feed\/",
+            "icon": "fab fa-linkedin",
+            "order_position": 3,
+            "is_active": true
+        }
+    ],
+    "footer_links": [
+        2,
+        11,
+        14,
+        31,
+        17
+    ]
+}
